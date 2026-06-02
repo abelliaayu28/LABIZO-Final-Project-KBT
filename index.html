@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>LabiZo - Pinjam Barang Tetangga</title>
     
-    <!-- Scripts & Plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
@@ -86,14 +84,12 @@
                         'labizo-warning': '#E71D36',
                         'labizo-bg-splash': '#0c252c',
                     },
-                    // DIKEMBALIKAN KE SETTINGAN ASLI ANDA
                     borderRadius: {
                         "DEFAULT": "1rem",
                         "lg": "2rem",
                         "xl": "3rem",
                         "full": "9999px"
                     },
-                    // DIKEMBALIKAN KE SETTINGAN ASLI ANDA
                     spacing: {
                         "xl": "2.5rem",
                         "margin": "1.25rem",
@@ -181,13 +177,30 @@
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
         }
+
+        /* AI Verification Styles */
+        @keyframes scan-line {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .animate-ai-scan {
+            animation: scan-line 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .ai-bounding-box {
+            position: absolute;
+            border: 2px dashed #ff3b30;
+            background-color: rgba(255, 59, 48, 0.2);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.5);
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-center font-sans antialiased selection:bg-secondary-container/30">
 
 <div class="relative bg-surface w-[393px] h-[852px] rounded-[55px] shadow-2xl overflow-hidden flex flex-col border-[12px] border-black ring-[4px] ring-gray-600/50">
     
-    <!-- Phone Top Status Bar -->
     <div class="absolute top-[8px] left-1/2 transform -translate-x-1/2 w-[120px] h-[33px] bg-black rounded-full z-[200] flex justify-center items-center pointer-events-none">
         <div class="absolute right-[22%] w-[10px] h-[10px] bg-[#1a1a1a] rounded-full blur-[0.5px]"></div>
     </div>
@@ -200,7 +213,6 @@
         </div>
     </div>
 
-    <!-- VIEW 1: SPLASH SCREEN -->
     <div id="view-splash" class="absolute inset-0 z-[80] flex flex-col items-center justify-between overflow-hidden bg-[#0f4c5c] transition-transform duration-500 fade-in">        <div class="relative w-full h-[45vh] flex items-center justify-center pt-8">
             <div class="w-full h-full max-w-4xl px-margin-safe relative flex items-center justify-center">
                 <img alt="LabiZo Handshake" src="https://raw.githubusercontent.com/abelliaayu28/LABIZO-Final-Project-KBT/refs/heads/main/data/designlogo.jpg" class="w-64 h-64 md:w-64 md:h-64 object-contain mt-[5cm]" />
@@ -217,7 +229,6 @@
                 </div>
             </div>
             <div class="w-full space-y-md mt-20 flex flex-col items-center">
-                <!-- DIKEMBALIKAN KE rounded-xl, TULISAN TEBAL & BESAR SEPERTI REQUEST TERAKHIR -->
                 <button onclick="enterApp('borrower')" class="w-[85%] mx-auto group bg-white text-primary py-4 px-8 rounded-xl font-headline-md text-2xl font-bold organic-border border-white stamp-press transition-all flex items-center justify-center gap-sm shadow-lg">
                     Saya Peminjam
                     <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform font-bold text-2xl">arrow_forward</span>
@@ -240,7 +251,6 @@
         </div>
     </div>
 
-    <!-- VIEW 2: LOGIN SCREEN -->
     <div id="view-login" class="absolute inset-0 z-50 bg-surface flex flex-col hidden transition-transform duration-500 overflow-y-auto no-scrollbar">
         <div class="absolute top-20 -left-10 w-40 h-40 bg-secondary-container/10 rounded-full blur-3xl -z-10"></div>
         <div class="absolute bottom-20 -right-10 w-60 h-60 bg-primary-container/5 rounded-full blur-3xl -z-10"></div>
@@ -262,7 +272,6 @@
                 <p class="font-body-md text-m text-gray-500 px-md">Selamat datang kembali! Yuk, mulai berbagi atau meminjam barang.</p>
             </section>
 
-            <!-- DIKEMBALIKAN: Wrapper rounded-xl, btn active rounded-lg -->
             <div class="bg-surface-container p-1.5 rounded-xl flex items-center mb-lg border-2 border-outline-variant/30">
                 <button id="btn-role-borrower" onclick="setRole('borrower')" class="flex-1 py-3 px-4 rounded-lg bg-white shadow-[2px_2px_0px_0px_rgba(15,76,92,0.1)] text-primary-container font-bold transition-all transform active:scale-95">Peminjam</button>
                 <button id="btn-role-lender" onclick="setRole('lender')" class="flex-1 py-3 px-4 rounded-lg text-gray-500 font-medium hover:text-primary transition-colors">Pemilik Barang</button>
@@ -275,7 +284,6 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">alternate_email</span>
                         </div>
-                        <!-- DIKEMBALIKAN: Input rounded-xl -->
                         <input class="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-xl focus:border-primary-container focus:ring-0 transition-all text-sm" placeholder="name@campus.edu" type="text"/>
                     </div>
                 </div>
@@ -325,7 +333,6 @@
         </main>
     </div>
 
-    <!-- VIEW 3: SIGNUP SCREEN -->
     <div id="view-signup" class="absolute inset-0 z-[55] bg-surface flex flex-col hidden overflow-y-auto no-scrollbar">
         <header class="flex items-center px-5 pt-12 pb-2 w-full bg-surface border-b border-surface-container-high sticky top-0 z-50">
             <button onclick="backToLogin()" class="mr-4 text-gray-800 p-1 hover:bg-surface-container rounded-full transition">
@@ -340,7 +347,6 @@
                 <p class="text-sm text-gray-500">Mulai berbagi dan meminjam barang dengan tetangga di sekitarmu hari ini.</p>
             </section>
 
-            <!-- DIKEMBALIKAN: Input Signup rounded-full seperti snippet -->
             <div class="space-y-4">
                 <div class="space-y-1">
                     <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">Nama Lengkap</label>
@@ -431,11 +437,7 @@
         </main>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- VIEWS: BORROWER APP -->
-    <!-- ========================================================================= -->
     <div id="view-borrower-app" class="absolute inset-0 z-[60] bg-background flex flex-col hidden">
-        <!-- Dashboard Header -->
         <header class="w-full flex justify-between items-center px-5 pt-12 pb-3 bg-white/80 backdrop-blur-xl border-b border-primary/10 z-50 shadow-sm">
             <div class="flex items-center gap-3">
                 <span class="text-2xl font-black text-primary-container tracking-tight font-['Bricolage_Grotesque']">LabiZo</span>
@@ -450,9 +452,7 @@
         
         <div id="borrower-content" class="flex-1 overflow-y-auto no-scrollbar pb-32">
             
-            <!-- HOME TAB -->
             <div id="borrower-home" class="p-4 space-y-6 fade-in">
-                <!-- Search Bar Section -->
                 <section>
                     <div class="glass-card organic-shadow rounded-full px-5 py-3 flex items-center gap-3 bg-white/70 border border-slate-200">
                         <span class="material-symbols-outlined text-outline">search</span>
@@ -463,7 +463,6 @@
                     </div>
                 </section>
 
-                <!-- Categories -->
                 <section class="custom-scrollbar overflow-x-auto flex gap-2 pb-2 -mx-4 px-4">
                     <button class="flex-shrink-0 bg-primary-container text-white px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform">Semua</button>
                     <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Kamera</button>
@@ -472,8 +471,6 @@
                     <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Outdoor</button>
                 </section>
 
-                <!-- Map Preview -->
-                <!-- DIKEMBALIKAN: rounded-lg sesuai config (2rem) -->
                 <section class="relative h-48 rounded-lg overflow-hidden organic-shadow border border-slate-100 group">
                     <img class="w-full h-full object-cover grayscale-[0.2] group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJNRDF13Z2cBx1AlJoZlQC7ozEI2C_6A39YTLJ88wWOzvvr90txiEFGacxzhp21XCqIudi97tiNB_bUbrNhmXDTQjX8h0a5kbVSjOdJG_dEc-0AD9IZ_j0zDLz5XT2o0sQVb887rVOYFWZc45ziTx95vkLe7cnHyctzD4rQWmTfzrr9_UTVCPE2qI4q1-4tGDAoERv_Ycnjyzg1Qr0kmo671_gYbR3K_r9-OsQG0rOF5nLLoO4T9LZolKehEld6hSSLq5s-xMpo5Q"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
@@ -489,7 +486,6 @@
                     </div>
                 </section>
 
-                <!-- Promotional Banner (Bento Grid Style) -->
                 <section class="grid grid-cols-2 gap-4">
                     <div class="bg-primary text-white p-5 rounded-lg flex flex-col justify-between min-h-[160px] relative overflow-hidden shadow-lg organic-shadow">
                         <div class="z-10">
@@ -514,26 +510,21 @@
                     </div>
                 </section>
 
-                <!-- Item Grid -->
                 <section>
                     <div class="flex items-center justify-between mb-3 px-1">
                         <h2 class="font-['Bricolage_Grotesque'] font-bold text-lg text-gray-800">Pilihan Terpopuler</h2>
                         <button class="text-primary-container font-bold text-xs hover:underline">Lihat Semua</button>
                     </div>
-                    <!-- DIKEMBALIKAN: Script renderBorrowerItems() menggunakan rounded-lg -->
                     <div class="grid grid-cols-2 gap-3" id="borrower-item-list"></div>
                 </section>
             </div>
             
-            <!-- HISTORY TAB -->
             <div id="borrower-history" class="p-4 hidden fade-in mt-2">
                 <h3 class="font-['Bricolage_Grotesque'] font-bold text-xl text-gray-800 mb-4">Riwayat Peminjaman</h3>
                 <div class="space-y-3" id="history-list"></div>
             </div>
             
-            <!-- PROFILE TAB -->
             <div id="borrower-profile" class="p-4 hidden fade-in mt-2">
-                <!-- Profile Hero Card (DIKEMBALIKAN rounded-lg) -->
                 <div class="glass-card organic-shadow rounded-lg p-6 flex flex-col items-center text-center bg-white/70 mb-4 border border-white/50">
                     <div class="relative mb-4">
                         <div class="w-28 h-28 rounded-full border-2 border-white shadow-lg overflow-hidden ring-4 ring-primary/10">
@@ -549,7 +540,6 @@
                     </div>
                 </div>
 
-                <!-- Stats Bento Grid (DIKEMBALIKAN rounded-lg) -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
                         <span class="font-['Bricolage_Grotesque'] font-bold text-2xl text-primary-container block mb-1">12</span>
@@ -561,7 +551,6 @@
                     </div>
                 </div>
 
-                <!-- Role Switcher (DIKEMBALIKAN rounded-lg) -->
                 <div class="mb-6">
                     <button onclick="switchToLenderMode()" class="w-full bg-primary-container text-white font-bold py-4 rounded-lg shadow-[0_8px_20px_rgba(15,76,92,0.2)] flex items-center justify-center gap-3 active:scale-95 transition-transform border border-primary-container/80">
                         <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
@@ -569,7 +558,6 @@
                     </button>
                 </div>
 
-                <!-- Menu List (DIKEMBALIKAN rounded-lg) -->
                 <div class="space-y-3">
                     <h3 class="font-bold text-gray-400 uppercase ml-4 mb-2 tracking-widest text-[10px]">Pengaturan Akun</h3>
                     <a href="#" class="flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-gray-50 transition-colors group border border-white/50">
@@ -603,7 +591,6 @@
             </div>
         </div>
         
-        <!-- Bottom Navigation Bar (DIKEMBALIKAN rounded-t-[32px]) -->
         <nav class="absolute bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-4px_20px_0_rgba(15,76,92,0.08)] rounded-t-[32px] rounded-b-[45px]">
             <button onclick="switchBorrowerTab('home')" id="b-nav-home" class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full px-5 py-1.5 transition-all duration-200 active:scale-90">
                 <span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">home</span>
@@ -620,11 +607,7 @@
         </nav>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- VIEWS: LENDER APP -->
-    <!-- ========================================================================= -->
     <div id="view-lender-app" class="absolute inset-0 z-[60] bg-background flex flex-col hidden">
-        <!-- Dashboard Header -->
         <header class="w-full flex justify-between items-center px-5 pt-12 pb-3 bg-white/80 backdrop-blur-xl border-b border-primary/10 z-50 shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border-2 border-primary/20">
@@ -639,9 +622,7 @@
 
         <div id="lender-content" class="flex-1 overflow-y-auto no-scrollbar pb-32">
             
-            <!-- ITEMS TAB (Dashboard) -->
             <div id="lender-items" class="p-4 space-y-6 fade-in mt-2">
-                <!-- Summary Card: Pendapatan Bulan Ini -->
                 <section class="relative overflow-hidden p-5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white shadow-xl">
                     <div class="relative z-10 flex flex-col gap-2">
                         <span class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Pendapatan Bulan Ini</span>
@@ -654,11 +635,9 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider">+12% dari bulan lalu</span>
                         </div>
                     </div>
-                    <!-- Decorative circle -->
                     <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                 </section>
 
-                <!-- Stats Bento Grid -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col gap-1 border border-slate-100 bg-white/70">
                         <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Total Barang</span>
@@ -681,7 +660,6 @@
                     </div>
                 </div>
 
-                <!-- Section: Barang Saya -->
                 <section class="space-y-4">
                     <div class="flex justify-between items-center px-1">
                         <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-gray-800">Barang Saya</h3>
@@ -691,20 +669,16 @@
                         </button>
                     </div>
                     
-                    <!-- Dynamic List of Current Listings (Generated by renderLenderItems JS) -->
                     <div id="lender-items-list" class="grid grid-cols-1 gap-4"></div>
                 </section>
             </div>
 
-            <!-- REQUESTS TAB (Pesanan Terbaru) -->
             <div id="lender-requests" class="p-4 hidden fade-in mt-2">
                 <h3 class="font-['Bricolage_Grotesque'] font-bold text-xl text-gray-800 mb-4 px-1">Pesanan Terbaru</h3>
                 <div id="requests-list" class="space-y-3"></div>
             </div>
 
-            <!-- PROFILE TAB -->
             <div id="lender-profile" class="p-4 hidden fade-in mt-2">
-                 <!-- Profile Hero Card (DIKEMBALIKAN rounded-lg) -->
                  <div class="glass-card organic-shadow rounded-lg p-6 flex flex-col items-center text-center bg-white/70 mb-4 border border-white/50">
                     <div class="relative mb-4">
                         <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-4 ring-primary/10">
@@ -720,7 +694,6 @@
                     </div>
                 </div>
 
-                <!-- Stats Bento Grid (DIKEMBALIKAN rounded-lg) -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
                         <span class="font-['Bricolage_Grotesque'] font-bold text-3xl text-primary-container block mb-1">25</span>
@@ -732,7 +705,6 @@
                     </div>
                 </div>
 
-                <!-- Role Switcher (DIKEMBALIKAN rounded-lg) -->
                 <div class="mb-6">
                     <button onclick="switchToBorrowerMode()" class="w-full bg-white text-primary-container font-bold py-4 rounded-lg shadow-md flex items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-200">
                         <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
@@ -740,7 +712,6 @@
                     </button>
                 </div>
 
-                <!-- Menu List (DIKEMBALIKAN rounded-lg) -->
                 <div class="space-y-3">
                     <h3 class="font-bold text-gray-400 uppercase ml-4 mb-2 tracking-widest text-[10px]">Pengaturan Akun</h3>
                     <button onclick="logout()" class="w-full flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-red-50 transition-colors group border border-white/50">
@@ -772,9 +743,7 @@
         </nav>
     </div>
 
-    <!-- MAP EXPLORE FULL VIEW -->
     <div id="view-map-explore" class="absolute inset-0 z-[120] flex flex-col hidden slide-up map-bg overflow-hidden">
-        <!-- Header -->
         <header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-primary/10 shadow-[0_4px_20px_rgba(15,76,92,0.08)]">
             <div class="flex justify-between items-center w-full px-6 py-4 pt-12">
                 <div class="flex items-center gap-4">
@@ -791,9 +760,7 @@
             </div>
         </header>
 
-        <!-- Map Area -->
         <div class="flex-1 relative">
-            <!-- Simulated Pins -->
             <div onclick="openItemDetail(3); closeMapExplore()" class="absolute top-1/4 left-1/4 group cursor-pointer active:scale-90 transition-all z-20">
                 <div class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center organic-shadow border-4 border-white shadow-lg mx-auto">
                     <span class="material-symbols-outlined text-[20px]">photo_camera</span>
@@ -813,7 +780,6 @@
                 <div class="mt-2 bg-white px-2 py-1 rounded-full text-xs font-bold text-secondary organic-shadow border border-slate-100 text-center whitespace-nowrap">Rp 50rb/hari</div>
             </div>
             
-            <!-- Current Location -->
             <div class="absolute top-[60%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 z-10">
                 <div class="relative flex items-center justify-center">
                     <div class="absolute w-12 h-12 bg-blue-500/20 rounded-full animate-ping"></div>
@@ -821,15 +787,12 @@
                 </div>
             </div>
 
-            <!-- Floating UI Overlays Top -->
             <div class="absolute inset-x-0 top-4 px-5 space-y-4 z-30 pointer-events-none">
-                <!-- Glassmorphic Search Bar -->
                 <div class="glass-card flex items-center p-2 px-4 rounded-full organic-shadow border border-white/40 bg-white/80 pointer-events-auto">
                     <span class="material-symbols-outlined text-gray-400">search</span>
                     <input class="bg-transparent border-none focus:ring-0 w-full text-sm font-medium ml-2 text-gray-800 placeholder-gray-500 outline-none" placeholder="Cari di sekitar..." type="text"/>
                     <span class="material-symbols-outlined text-primary-container ml-2">tune</span>
                 </div>
-                <!-- Radius Selector -->
                 <div class="flex justify-center pointer-events-auto">
                     <div class="glass-card p-1 rounded-full flex gap-1 organic-shadow border border-white/40 bg-white/60">
                         <button class="px-5 py-2 rounded-full bg-primary-container text-white font-bold text-[10px] uppercase tracking-wider transition-all shadow-md">1km</button>
@@ -839,7 +802,6 @@
                 </div>
             </div>
 
-            <!-- Selected Item Bottom Sheet Preview (DIKEMBALIKAN rounded-lg) -->
             <div class="absolute inset-x-0 bottom-6 z-30 px-5 pb-8">
                 <div class="glass-card p-4 rounded-lg organic-shadow border border-white/60 bg-white/90 w-full backdrop-blur-xl transform translate-y-0 transition-transform duration-500">
                     <div class="flex gap-4">
@@ -868,8 +830,6 @@
         </div>
     </div>
 
-    <!-- Modals (Borrower Item Detail, Booking, Add Item) -->
-    <!-- DIKEMBALIKAN: Panel modal menggunakan rounded-lg/3xl agar konsisten -->
     <div id="modal-item-detail" class="absolute inset-0 z-[130] hidden bg-gray-50 flex flex-col slide-up">
         <div class="relative h-72 bg-gray-200">
             <img id="detail-img" src="" class="w-full h-full object-cover">
@@ -915,7 +875,6 @@
         </div>
     </div>
 
-    <!-- Booking Modal (DIKEMBALIKAN rounded-lg) -->
     <div id="modal-booking" class="absolute inset-0 z-[140] hidden bg-black/70 backdrop-blur-sm flex items-center justify-center fade-in">
         <div class="bg-white w-[88%] rounded-lg p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
@@ -952,7 +911,6 @@
         <div class="p-5 space-y-4 flex-1 overflow-y-auto pb-24">
             <div>
                 <label class="text-xs font-bold text-gray-500 mb-1 block">Nama Barang</label>
-                <!-- DIKEMBALIKAN rounded-lg -->
                 <input type="text" id="new-item-name" placeholder="Contoh: Bor Listrik Bosch" class="w-full border border-gray-200 rounded-lg p-3.5 outline-none focus:border-primary-container text-sm bg-white shadow-sm">
             </div>
             <div class="grid grid-cols-2 gap-3">
@@ -988,11 +946,148 @@
         </div>
     </div>
 
+    <div id="modal-ai-return" class="absolute inset-0 z-[150] hidden bg-gray-50 flex flex-col slide-up">
+        <div class="pt-14 px-5 pb-4 bg-white text-gray-800 flex items-center justify-between shadow-sm sticky top-0 z-10 border-b border-gray-100">
+            <button onclick="closeAiReturnModal()" class="p-2 hover:bg-gray-100 rounded-full -ml-2"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-primary">Verifikasi AI</h3>
+            <div class="w-10"></div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar pb-24 relative">
+            <div id="ai-input-section" class="p-5 space-y-5 fade-in">
+                <div class="bg-primary/5 border border-primary/20 p-4 rounded-lg flex gap-3 items-start">
+                    <span class="material-symbols-outlined text-primary-container">smart_toy</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-primary-container mb-1">Pindai Kondisi Terkini</h4>
+                        <p class="text-[10px] text-gray-500 leading-relaxed">Sistem AI LabiZo akan membandingkan foto barang saat ini dengan kondisi awal secara otomatis.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-800 mb-2 block">1. Kamera Verifikasi Langsung</label>
+                    <div class="relative w-full h-48 bg-gray-900 rounded-lg overflow-hidden border-2 border-gray-300 flex flex-col items-center justify-center group organic-shadow">
+                        <img id="ai-camera-preview" src="" class="hidden w-full h-full object-cover">
+                        <div id="ai-camera-placeholder" class="text-center">
+                            <span class="material-symbols-outlined text-white/50 text-4xl mb-2">videocam</span>
+                            <p class="text-xs text-white/50 font-medium">Kamera Siap</p>
+                        </div>
+                        <div id="ai-scanner-overlay" class="hidden absolute top-0 left-0 w-full h-2 bg-green-400 shadow-[0_0_15px_#4ade80] animate-ai-scan"></div>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="mockAiCamera('photo')" class="flex-1 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-lg text-xs font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[16px]">photo_camera</span> Ambil Foto</button>
+                        <button onclick="startAiScanProcess()" class="flex-1 bg-primary-container text-white py-2.5 rounded-lg text-xs font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[16px]">document_scanner</span> Mulai Scan AI</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <div class="h-px bg-gray-200 flex-1"></div>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Atau</span>
+                    <div class="h-px bg-gray-200 flex-1"></div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-800 mb-2 block">2. Upload Foto & Video Manual</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center bg-white hover:bg-gray-50 cursor-pointer transition flex flex-col items-center justify-center min-h-[100px]">
+                            <span class="material-symbols-outlined text-[24px] text-gray-400 mb-1">add_photo_alternate</span>
+                            <p class="text-[10px] font-medium text-gray-500">Upload Foto<br>(Bisa lebih dari 1)</p>
+                            <input type="file" multiple accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAiUploadPreview(this, 'foto')">
+                        </label>
+                        <label class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center bg-white hover:bg-gray-50 cursor-pointer transition flex flex-col items-center justify-center min-h-[100px]">
+                            <span class="material-symbols-outlined text-[24px] text-gray-400 mb-1">video_file</span>
+                            <p class="text-[10px] font-medium text-gray-500">Upload Video<br>(Max 20MB)</p>
+                            <input type="file" accept="video/mp4, video/mov, video/webm" class="hidden" onchange="handleAiUploadPreview(this, 'video')">
+                        </label>
+                    </div>
+                    <div id="ai-upload-previews" class="flex gap-2 overflow-x-auto mt-3 pb-2 hidden"></div>
+                    <button onclick="startAiScanProcess()" class="w-full mt-3 bg-secondary-container text-secondary font-bold py-3 rounded-lg shadow-sm active:scale-95 transition flex items-center justify-center gap-2 text-sm border border-secondary-container/50 hidden" id="btn-analyze-upload">
+                        <span class="material-symbols-outlined text-[18px]">psychology</span> Analisis Dokumen
+                    </button>
+                </div>
+            </div>
+
+            <div id="ai-loading-section" class="absolute inset-0 bg-gray-50 z-20 flex flex-col items-center justify-center hidden p-8 text-center fade-in">
+                <div class="relative w-20 h-20 mb-6">
+                    <div class="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-primary-container rounded-full border-t-transparent animate-spin"></div>
+                    <span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary text-[32px]">smart_toy</span>
+                </div>
+                <h3 class="font-['Bricolage_Grotesque'] font-bold text-xl text-gray-800 mb-2">AI Sedang Menganalisis...</h3>
+                <p class="text-xs text-gray-500 mb-6" id="ai-loading-text">Membandingkan kondisi piksel foto awal dan akhir.</p>
+                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div id="ai-progress-bar" class="bg-primary-container h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="ai-result-section" class="p-5 space-y-4 hidden fade-in">
+                <div class="glass-card bg-white organic-shadow rounded-lg p-5 border border-gray-100">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-gray-800">Hasil Verifikasi</h3>
+                        <div id="res-status-badge" class="px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider"></div>
+                    </div>
+                    <div class="flex items-end gap-2 mb-4">
+                        <span id="res-similarity" class="font-['Bricolage_Grotesque'] font-black text-4xl text-primary-container"></span>
+                        <span class="text-xs text-gray-500 font-medium mb-1">Tingkat Kemiripan</span>
+                    </div>
+                    
+                    <div class="space-y-3 mt-4 pt-4 border-t border-dashed border-gray-200">
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Rekomendasi AI</span>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[16px] text-yellow-500" id="res-rec-icon">warning</span>
+                                <span id="res-recommendation" class="font-bold text-sm text-gray-800"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Deteksi Kerusakan (Keparahan: <span id="res-severity" class="text-red-500"></span>)</span>
+                            <div id="res-damages" class="flex flex-wrap gap-1 mt-1"></div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Ringkasan</span>
+                            <p id="res-summary" class="text-[11px] text-gray-600 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg organic-shadow p-4 border border-gray-100">
+                    <h4 class="font-bold text-xs text-gray-800 mb-3">Perbandingan Kondisi (Sebelum vs Sesudah)</h4>
+                    <div class="flex gap-2">
+                        <div class="flex-1 relative">
+                            <span class="absolute top-1 left-1 bg-black/60 text-white text-[8px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm z-10">Kondisi Awal</span>
+                            <img id="res-img-before" src="" class="w-full h-32 object-cover rounded-md border border-gray-200">
+                        </div>
+                        <div class="flex-1 relative overflow-hidden">
+                            <span class="absolute top-1 left-1 bg-primary/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm z-10">Saat Kembali</span>
+                            <img id="res-img-after" src="" class="w-full h-32 object-cover rounded-md border border-gray-200">
+                            <div id="ai-damage-marker" class="ai-bounding-box hidden"></div>
+                        </div>
+                    </div>
+                    <p class="text-[9px] text-gray-400 mt-2 text-center flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[12px]">info</span> Bounding box merah menunjukkan letak perbedaan/kerusakan.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-5 z-20 pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]" id="ai-modal-footer">
+            <button id="btn-cancel-return" onclick="closeAiReturnModal()" class="w-full mb-2 bg-gray-100 text-gray-600 font-bold py-3.5 rounded-lg active:scale-95 transition text-sm">Batal</button>
+            <button id="btn-confirm-return" onclick="submitFinalReturn()" class="w-full bg-primary-container text-white font-bold py-3.5 rounded-lg shadow-md hover:bg-primary active:scale-95 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <span class="material-symbols-outlined text-[18px]">check_circle</span> Konfirmasi Pengembalian
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-ai-history-detail" class="absolute inset-0 z-[160] hidden bg-gray-50 flex flex-col slide-up">
+        <div class="pt-14 px-5 pb-4 bg-white text-gray-800 flex items-center justify-between shadow-sm sticky top-0 z-10 border-b border-gray-100">
+            <button onclick="closeAiHistoryDetail()" class="p-2 hover:bg-gray-100 rounded-full -ml-2"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-primary">Laporan AI</h3>
+            <div class="w-10"></div>
+        </div>
+        <div class="p-5 overflow-y-auto no-scrollbar pb-24" id="hist-detail-content">
+            </div>
+    </div>
+
     <div id="toast-msg" class="toast-notif hidden"></div>
 
-</div>
-
-<script>
+</div> <script>
     // Global state
     let currentRole = 'borrower';
     let selectedItem = null;
@@ -1164,7 +1259,6 @@
         let container = document.getElementById('borrower-item-list'); 
         container.innerHTML = ''; 
         dummyItems.forEach(item => { 
-            // DIKEMBALIKAN PENGGUNAAN rounded-lg (BERDASARKAN CONFIG) AGAR RAPI SEPERTI SEMULA
             let card = `
             <div onclick="openItemDetail(${item.id})" class="bg-surface-container-lowest rounded-lg overflow-hidden organic-shadow border border-slate-100 flex flex-col hover:-translate-y-1 transition-transform duration-300 cursor-pointer">
                 <div class="relative h-32">
@@ -1274,6 +1368,14 @@
         }, 1500);
     }
     
+    // AI Database & Global State
+    const aiVerificationsDB = {};
+    let currentReturnProcessId = null;
+    let mockUploadedImgUrl = "";
+
+    // -------------------------------------------------------------
+    // MODIFIED renderHistory TO INCLUDE AI BUTTONS SEAMLESSLY
+    // -------------------------------------------------------------
     function renderHistory() { 
         let container = document.getElementById('history-list'); 
         
@@ -1291,13 +1393,23 @@
                 actionButton = '<span class="text-gray-400 text-[10px]">Menunggu Pemilik...</span>';
             } else if (b.status === 'Sedang Dipinjam') {
                 statusBadge = '<span class="bg-green-100 text-green-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Sedang Dipinjam</span>';
-                actionButton = `<button onclick="completeBooking(${b.id})" class="text-primary-container text-[10px] font-bold underline">Kembalikan Barang</button>`;
+                // MODIFIED: Mengarahkan ke Verifikasi AI saat dikembalikan
+                actionButton = `<button onclick="startAiReturnProcess(${b.id})" class="text-primary-container text-[10px] font-bold underline">Kembalikan Barang</button>`;
             } else if (b.status === 'Ditolak') {
                 statusBadge = '<span class="bg-red-100 text-red-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Ditolak</span>';
                 actionButton = '<span class="text-red-400 text-[10px]">Pesanan Dibatalkan</span>';
             } else if (b.status === 'Selesai') {
                 statusBadge = '<span class="bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Selesai</span>';
                 actionButton = '<span class="text-blue-400 text-[10px]">Sudah Dikembalikan</span>';
+                
+                // MODIFIED: Tambahkan tombol lihat hasil AI jika data tersedia
+                if(aiVerificationsDB[b.id]) {
+                    actionButton += `
+                        <button onclick="openAiHistoryDetail(${b.id})" class="ai-verif-btn text-secondary font-bold border border-secondary/30 bg-secondary/10 px-3 py-1.5 rounded-lg mt-1 flex items-center gap-1 active:scale-95 transition shadow-sm w-full justify-center">
+                            <span class="material-symbols-outlined text-[14px]">psychology</span> Lihat Verifikasi AI
+                        </button>
+                    `;
+                }
             }
 
             return `
@@ -1306,7 +1418,7 @@
                 <div class="flex-1">
                     <p class="font-bold text-sm text-gray-800 line-clamp-1">${b.item.name}</p>
                     <p class="text-xs text-gray-500 mt-0.5">Durasi: ${b.days} hari</p>
-                    <div class="flex flex-col items-start gap-2 mt-2">
+                    <div class="flex flex-col items-start gap-2 mt-2 w-full">
                         ${statusBadge}
                         ${actionButton}
                     </div>
@@ -1315,11 +1427,10 @@
         }).join(''); 
     }
 
-    function completeBooking(id) {
-        let req = bookings.find(b => b.id === id);
-        if(req) req.status = 'Selesai';
-        renderHistory();
-        showToast("Barang berhasil dikembalikan!");
+    // ORIGINAL completeBooking function replaced with AI Hook
+    function startAiReturnProcess(id) {
+        currentReturnProcessId = id;
+        openAiReturnModal();
     }
     
     // Lender Functions
@@ -1462,7 +1573,243 @@
     }
     
     function editItem(id) { showToast("Membuka pengaturan barang..."); }
-    
+
+    // =============================================================
+    // AI LOGIC FUNCTIONS
+    // =============================================================
+
+    function openAiReturnModal() {
+        document.getElementById('modal-ai-return').classList.remove('hidden');
+        resetAiReturnState();
+    }
+
+    function closeAiReturnModal() {
+        document.getElementById('modal-ai-return').classList.add('hidden');
+    }
+
+    function resetAiReturnState() {
+        document.getElementById('ai-input-section').classList.remove('hidden');
+        document.getElementById('ai-loading-section').classList.add('hidden');
+        document.getElementById('ai-result-section').classList.add('hidden');
+        
+        document.getElementById('ai-camera-preview').classList.add('hidden');
+        document.getElementById('ai-camera-placeholder').classList.remove('hidden');
+        document.getElementById('ai-upload-previews').innerHTML = '';
+        document.getElementById('ai-upload-previews').classList.add('hidden');
+        document.getElementById('btn-analyze-upload').classList.add('hidden');
+        
+        let confirmBtn = document.getElementById('btn-confirm-return');
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50');
+        document.getElementById('btn-cancel-return').classList.remove('hidden');
+    }
+
+    function mockAiCamera(type) {
+        // Simulasi mengambil foto dari kamera web
+        const item = bookings.find(b => b.id === currentReturnProcessId).item;
+        const camPreview = document.getElementById('ai-camera-preview');
+        camPreview.src = item.image; 
+        mockUploadedImgUrl = item.image;
+        
+        camPreview.classList.remove('hidden');
+        document.getElementById('ai-camera-placeholder').classList.add('hidden');
+        showToast("Foto berhasil ditangkap kamera.");
+    }
+
+    function handleAiUploadPreview(input, type) {
+        const previewContainer = document.getElementById('ai-upload-previews');
+        if(input.files && input.files.length > 0) {
+            previewContainer.classList.remove('hidden');
+            document.getElementById('btn-analyze-upload').classList.remove('hidden');
+            
+            Array.from(input.files).forEach(file => {
+                const url = URL.createObjectURL(file);
+                mockUploadedImgUrl = url; 
+                
+                let el = document.createElement('div');
+                el.className = "w-16 h-16 shrink-0 rounded-md overflow-hidden border border-gray-200 relative";
+                if(type === 'foto') {
+                    el.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+                } else {
+                    el.innerHTML = `<video src="${url}" class="w-full h-full object-cover"></video><span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full text-[16px] p-1">play_arrow</span>`;
+                }
+                previewContainer.appendChild(el);
+            });
+        }
+    }
+
+    function startAiScanProcess() {
+        if(!mockUploadedImgUrl) {
+            showToast("Harap ambil foto atau upload dokumen terlebih dahulu.");
+            return;
+        }
+
+        const scannerLine = document.getElementById('ai-scanner-overlay');
+        scannerLine.classList.remove('hidden');
+
+        setTimeout(() => {
+            scannerLine.classList.add('hidden');
+            document.getElementById('ai-input-section').classList.add('hidden');
+            document.getElementById('ai-loading-section').classList.remove('hidden');
+            document.getElementById('btn-cancel-return').classList.add('hidden');
+            
+            let progress = 0;
+            const pBar = document.getElementById('ai-progress-bar');
+            const pText = document.getElementById('ai-loading-text');
+            const texts = ["Menganalisis piksel gambar...", "Mendeteksi bentuk geometri...", "Mencari anomali warna...", "Menyusun laporan akhir..."];
+            
+            let interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if(progress >= 100) progress = 100;
+                pBar.style.width = `${progress}%`;
+                
+                if(progress > 20 && progress < 50) pText.innerText = texts[1];
+                if(progress > 50 && progress < 80) pText.innerText = texts[2];
+                if(progress > 80) pText.innerText = texts[3];
+
+                if(progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(showAiResults, 600);
+                }
+            }, 300);
+
+        }, 1000);
+    }
+
+    function showAiResults() {
+        document.getElementById('ai-loading-section').classList.add('hidden');
+        document.getElementById('ai-result-section').classList.remove('hidden');
+
+        const booking = bookings.find(b => b.id === currentReturnProcessId);
+        const itemImg = booking.item.image;
+
+        // Simulasi Random
+        const isDamaged = Math.random() > 0.7; 
+        let simStatus, simBadgeColor, simIcon, recText, simPercent, severityStr, damagesArr;
+        
+        if(isDamaged) {
+            simStatus = "Kurang Sesuai";
+            simBadgeColor = "bg-orange-100 text-orange-700";
+            simPercent = 88;
+            simIcon = "warning";
+            recText = "Perlu Pemeriksaan Manual";
+            severityStr = "Sedang";
+            damagesArr = ["Goresan pada bodi luar", "Perubahan warna"];
+            document.getElementById('res-summary').innerText = "AI mendeteksi adanya goresan ringan pada sisi luar barang yang sebelumnya tidak tercatat. Sistem menahan sebagian uang deposit sementara.";
+            
+            const bbox = document.getElementById('ai-damage-marker');
+            bbox.style.top = "40%"; bbox.style.left = "30%"; bbox.style.width = "40px"; bbox.style.height = "40px";
+            bbox.classList.remove('hidden');
+        } else {
+            simStatus = "Sangat Sesuai";
+            simBadgeColor = "bg-green-100 text-green-700";
+            simPercent = 99;
+            simIcon = "verified";
+            recText = "Barang Diterima";
+            severityStr = "Aman";
+            damagesArr = ["Tidak ditemukan kerusakan"];
+            document.getElementById('res-summary').innerText = "Kondisi fisik barang identik dengan foto awal sebelum dipinjam. Tidak ada anomali atau kerusakan terdeteksi.";
+            document.getElementById('ai-damage-marker').classList.add('hidden');
+        }
+
+        document.getElementById('res-status-badge').className = `px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${simBadgeColor}`;
+        document.getElementById('res-status-badge').innerText = simStatus;
+        document.getElementById('res-similarity').innerText = `${simPercent}%`;
+        document.getElementById('res-rec-icon').innerText = simIcon;
+        document.getElementById('res-recommendation').innerText = recText;
+        document.getElementById('res-severity').innerText = severityStr;
+        document.getElementById('res-damages').innerHTML = damagesArr.map(d => `<span class="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase">${d}</span>`).join('');
+        
+        document.getElementById('res-img-before').src = itemImg;
+        document.getElementById('res-img-after').src = mockUploadedImgUrl; 
+
+        let confirmBtn = document.getElementById('btn-confirm-return');
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50');
+        document.getElementById('btn-cancel-return').classList.remove('hidden');
+
+        aiVerificationsDB[currentReturnProcessId] = {
+            timestamp: new Date().toLocaleString('id-ID'),
+            matchStatus: simStatus,
+            similarity: simPercent,
+            damages: damagesArr,
+            severity: severityStr,
+            recommendation: recText,
+            summary: document.getElementById('res-summary').innerText,
+            beforeImg: itemImg,
+            afterImg: mockUploadedImgUrl,
+            badgeColor: simBadgeColor,
+            icon: simIcon
+        };
+    }
+
+    function submitFinalReturn() {
+        const btn = document.getElementById('btn-confirm-return');
+        btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">sync</span> Menyimpan Data...`;
+        
+        setTimeout(() => {
+            let req = bookings.find(b => b.id === currentReturnProcessId);
+            if(req) req.status = 'Selesai';
+            
+            closeAiReturnModal();
+            renderHistory(); 
+            showToast("Verifikasi AI berhasil! Barang dikembalikan.");
+            
+            btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span> Konfirmasi Pengembalian`;
+        }, 1000);
+    }
+
+    function openAiHistoryDetail(bookingId) {
+        const data = aiVerificationsDB[bookingId];
+        if(!data) return;
+
+        const content = document.getElementById('hist-detail-content');
+        content.innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs text-gray-500 font-medium">Dianalisis pada:<br>${data.timestamp}</span>
+                <span class="${data.badgeColor} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${data.matchStatus} (${data.similarity}%)</span>
+            </div>
+            
+            <div class="bg-gray-100 rounded-lg p-3 mb-5 border border-gray-200">
+                <p class="text-xs text-gray-700 italic">"${data.summary}"</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div>
+                    <span class="text-[10px] font-bold text-gray-400 block mb-1 uppercase tracking-widest">Kondisi Awal</span>
+                    <img src="${data.beforeImg}" class="w-full h-24 object-cover rounded-lg border border-gray-200 shadow-sm">
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-gray-400 block mb-1 uppercase tracking-widest">Kondisi Kembali</span>
+                    <img src="${data.afterImg}" class="w-full h-24 object-cover rounded-lg border border-gray-200 shadow-sm">
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white organic-shadow rounded-lg p-4 border border-gray-100">
+                    <h4 class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-2">Diagnosis Kerusakan AI</h4>
+                    <div class="flex flex-wrap gap-2">
+                        ${data.damages.map(d => `<span class="bg-red-50 text-red-600 border border-red-100 px-2.5 py-1 rounded-md text-[10px] font-bold">${d}</span>`).join('')}
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-2">Tingkat Keparahan Sistem: <b class="text-gray-800">${data.severity}</b></p>
+                </div>
+                
+                <div class="bg-primary/5 rounded-lg p-4 border border-primary/20 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[24px] text-primary-container">${data.icon}</span>
+                    <div>
+                        <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Keputusan Sistem</span>
+                        <span class="font-bold text-sm text-primary-container">${data.recommendation}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('modal-ai-history-detail').classList.remove('hidden');
+    }
+
+    function closeAiHistoryDetail() {
+        document.getElementById('modal-ai-history-detail').classList.add('hidden');
+    }
+
     // Initialize Start
     setStatusBarDark(false);
 </script>
