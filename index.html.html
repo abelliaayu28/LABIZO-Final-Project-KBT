@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LabiZo - Pinjam Barang Tetangga</title>
+    
+    <!-- Scripts & Plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        "headline-md": ["Bricolage Grotesque", "Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Bricolage Grotesque", "Inter"]
+                    },
+                    colors: {
+                        // Core Unified Theme Colors
+                        "surface-container-highest": "#e2e3e0",
+                        "tertiary": "#630716",
+                        "surface-container-high": "#e8e8e5",
+                        "on-secondary-container": "#663b00",
+                        "on-secondary-fixed-variant": "#683d00",
+                        "secondary-fixed-dim": "#ffb86b",
+                        "surface-tint": "#306576",
+                        "surface-container": "#eeeeeb",
+                        "inverse-on-surface": "#f1f1ee",
+                        "secondary-fixed": "#ffdcbc",
+                        "on-tertiary-fixed-variant": "#84222b",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#410009",
+                        "on-surface": "#1a1c1b",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#87bbce",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#b6ebfe",
+                        "primary-container": "#0f4c5c",
+                        "on-surface-variant": "#40484b",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#114d5d",
+                        "primary-fixed-dim": "#9acee1",
+                        "on-tertiary-container": "#ff9698",
+                        "outline": "#70787c",
+                        "tertiary-fixed-dim": "#ffb3b3",
+                        "on-background": "#1a1c1b",
+                        "secondary": "#895100",
+                        "tertiary-container": "#83212a",
+                        "surface": "#f9f9f6",
+                        "outline-variant": "#c0c8cb",
+                        "surface-dim": "#dadad7",
+                        "inverse-surface": "#2f312f",
+                        "on-primary-fixed": "#001f28",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#fd9d1a",
+                        "background": "#f9f9f6",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#003441",
+                        "surface-variant": "#e2e3e0",
+                        "inverse-primary": "#9acee1",
+                        "surface-container-low": "#f4f4f1",
+                        "on-secondary-fixed": "#2c1700",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9f6",
+                        "tertiary-fixed": "#ffdad9",
+                        // Old legacy variables
+                        'labizo-primary': '#0F4C5C',
+                        'labizo-secondary': '#FF9F1C',
+                        'labizo-accent': '#2EC4B6',
+                        'labizo-dark': '#011627',
+                        'labizo-light': '#FDFFFC',
+                        'labizo-warning': '#E71D36',
+                        'labizo-bg-splash': '#0c252c',
+                    },
+                    // DIKEMBALIKAN KE SETTINGAN ASLI ANDA
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    // DIKEMBALIKAN KE SETTINGAN ASLI ANDA
+                    spacing: {
+                        "xl": "2.5rem",
+                        "margin": "1.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "md": "1rem",
+                        "xs": "0.25rem",
+                        "gutter": "1rem",
+                        "margin-safe": "20px",
+                        "base": "8px"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base / App Shell Styles */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .calendar-day { transition: all 0.2s ease; cursor: pointer; }
+        .calendar-day.selected { background-color: #FF9F1C; color: white; border-color: #FF9F1C; }
+        .calendar-day.unavailable { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; text-decoration: line-through; }
+        .toast-notif { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 40px; font-size: 12px; z-index: 200; white-space: nowrap; }
+
+        /* New UI Elements Styles */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .organic-border {
+            border-width: 2px;
+            border-style: solid;
+            border-top-width: 1.8px;
+            border-left-width: 2.2px;
+            border-right-width: 1.9px;
+            border-bottom-width: 2.1px;
+        }
+        .stamp-press:active {
+            transform: translate(2px, 2px);
+            border-width: 3px;
+        }
+        .hand-drawn-underline {
+            position: relative;
+        }
+        .hand-drawn-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 7C20 3 45 3 97 7' stroke='%23FFB100' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .hand-drawn-border {
+            border-style: dashed;
+            border-width: 2px;
+        }
+
+        /* Glass & Shadows */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .organic-shadow {
+            box-shadow: 0 8px 32px rgba(15, 76, 92, 0.08);
+        }
+        .map-bg {
+            background-color: #e5eeff;
+            background-image: radial-gradient(#6bd8cb 0.5px, transparent 0.5px), radial-gradient(#6bd8cb 0.5px, #f8f9ff 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex justify-center items-center font-sans antialiased selection:bg-secondary-container/30">
+
+<div class="relative bg-surface w-[393px] h-[852px] rounded-[55px] shadow-2xl overflow-hidden flex flex-col border-[12px] border-black ring-[4px] ring-gray-600/50">
+    
+    <!-- Phone Top Status Bar -->
+    <div class="absolute top-[8px] left-1/2 transform -translate-x-1/2 w-[120px] h-[33px] bg-black rounded-full z-[200] flex justify-center items-center pointer-events-none">
+        <div class="absolute right-[22%] w-[10px] h-[10px] bg-[#1a1a1a] rounded-full blur-[0.5px]"></div>
+    </div>
+    <div class="absolute top-[18px] w-full px-7 flex justify-between items-center z-[190] text-s font-medium pointer-events-none">
+        <span id="status-time" class="text-white font-semibold ml-2">09:41</span>
+        <div class="flex gap-1.5 text-white" id="status-icons">
+            <span class="material-symbols-outlined text-[14px]">signal_cellular_4_bar</span>
+            <span class="material-symbols-outlined text-[14px]">wifi</span>
+            <span class="material-symbols-outlined text-[14px]">battery_full</span>
+        </div>
+    </div>
+
+    <!-- VIEW 1: SPLASH SCREEN -->
+    <div id="view-splash" class="absolute inset-0 z-[80] flex flex-col items-center justify-between overflow-hidden bg-[#0f4c5c] transition-transform duration-500 fade-in">        <div class="relative w-full h-[45vh] flex items-center justify-center pt-8">
+            <div class="w-full h-full max-w-4xl px-margin-safe relative flex items-center justify-center">
+                <img alt="LabiZo Handshake" src="https://raw.githubusercontent.com/abelliaayu28/LABIZO-Final-Project-KBT/refs/heads/main/data/designlogo.jpg" class="w-64 h-64 md:w-64 md:h-64 object-contain mt-[5cm]" />
+            </div>
+        </div>
+        <div class="w-full flex-1 flex flex-col items-center justify-center px-margin-safe py-lg max-w-lg mx-auto text-center">
+            <div class="mb-lg mt-4">
+                <h1 class="font-['Bricolage_Grotesque'] text-7xl text-white tracking-wide mb-base drop-shadow-sm font-bold">LabiZo</h1>
+                <div class="relative inline-block">
+                    <p class="font-body-lg text-white/90 italic">Let's Borrow in Your Zone</p>
+                    <svg class="absolute -bottom-2 left-0 w-full h-2 text-secondary-container" preserveAspectRatio="none" viewBox="0 0 100 10">
+                        <path d="M0 5 Q 25 0, 50 5 T 100 5" fill="none" stroke="currentColor" stroke-width="2"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="w-full space-y-md mt-20 flex flex-col items-center">
+                <!-- DIKEMBALIKAN KE rounded-xl, TULISAN TEBAL & BESAR SEPERTI REQUEST TERAKHIR -->
+                <button onclick="enterApp('borrower')" class="w-[85%] mx-auto group bg-white text-primary py-4 px-8 rounded-xl font-headline-md text-2xl font-bold organic-border border-white stamp-press transition-all flex items-center justify-center gap-sm shadow-lg">
+                    Saya Peminjam
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform font-bold text-2xl">arrow_forward</span>
+                </button>
+                <button onclick="enterApp('lender')" class="w-[85%] mx-auto bg-transparent text-white py-4 px-8 rounded-xl font-headline-md text-2xl font-bold organic-border border-white/40 stamp-press transition-all backdrop-blur-sm">
+                    Saya Pemilik Barang
+                </button>
+            </div>
+            <div class="mt-lg flex items-center gap-xs">
+                <span class="w-2 h-2 rounded-full bg-white"></span>
+                <span class="w-2 h-2 rounded-full bg-white/20"></span>
+                <span class="w-2 h-2 rounded-full bg-white/20"></span>
+            </div>
+        </div>
+        <div class="w-full px-margin-safe pb-1 mb-4">
+            <div class="flex justify-between items-center text-white/60 font-label-caps text-xs uppercase tracking-widest">
+                <span>Versi 2.1.0</span>
+                <span>© 2024 LabiZo Team</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: LOGIN SCREEN -->
+    <div id="view-login" class="absolute inset-0 z-50 bg-surface flex flex-col hidden transition-transform duration-500 overflow-y-auto no-scrollbar">
+        <div class="absolute top-20 -left-10 w-40 h-40 bg-secondary-container/10 rounded-full blur-3xl -z-10"></div>
+        <div class="absolute bottom-20 -right-10 w-60 h-60 bg-primary-container/5 rounded-full blur-3xl -z-10"></div>
+
+        <header class="flex justify-between items-center px-5 pt-12 pb-2 w-full bg-surface border-b border-surface-container-high sticky top-0 z-50">
+            <button onclick="backToSplash()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined text-primary-container">close</span>
+            </button>
+            <span class="text-2xl font-['Bricolage_Grotesque'] font-black text-primary-container tracking-tighter mt-4">LabiZo</span>
+            <div class="w-10"></div>
+        </header>
+
+        <main class="flex-grow px-margin-safe py-lg max-w-md mx-auto w-full">
+            <section class="flex flex-col items-center text-center mb-lg mt-2">
+                <div class="w-20 h-20 bg-primary-container rounded-3xl flex items-center justify-center mb-md border-b-4 border-on-primary-fixed-variant shadow-md">
+                    <span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings: 'FILL' 1;">handshake</span>
+                </div>
+                <h1 class="font-['Bricolage_Grotesque'] text-4xl font-black text-primary mb-2">LabiZo</h1>
+                <p class="font-body-md text-m text-gray-500 px-md">Selamat datang kembali! Yuk, mulai berbagi atau meminjam barang.</p>
+            </section>
+
+            <!-- DIKEMBALIKAN: Wrapper rounded-xl, btn active rounded-lg -->
+            <div class="bg-surface-container p-1.5 rounded-xl flex items-center mb-lg border-2 border-outline-variant/30">
+                <button id="btn-role-borrower" onclick="setRole('borrower')" class="flex-1 py-3 px-4 rounded-lg bg-white shadow-[2px_2px_0px_0px_rgba(15,76,92,0.1)] text-primary-container font-bold transition-all transform active:scale-95">Peminjam</button>
+                <button id="btn-role-lender" onclick="setRole('lender')" class="flex-1 py-3 px-4 rounded-lg text-gray-500 font-medium hover:text-primary transition-colors">Pemilik Barang</button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-1">Email atau No. Telepon</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">alternate_email</span>
+                        </div>
+                        <!-- DIKEMBALIKAN: Input rounded-xl -->
+                        <input class="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-xl focus:border-primary-container focus:ring-0 transition-all text-sm" placeholder="name@campus.edu" type="text"/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider">Kata Sandi</label>
+                        <a class="text-[11px] text-primary-container font-bold hover:underline" href="#">Lupa Sandi?</a>
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">lock</span>
+                        </div>
+                        <input class="w-full pl-12 pr-12 py-4 bg-white border-2 border-gray-200 rounded-xl focus:border-primary-container focus:ring-0 transition-all text-sm" placeholder="••••••••" type="password"/>
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                            <span class="material-symbols-outlined text-gray-400 cursor-pointer hover:text-primary">visibility</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full bg-primary-container text-white py-4 rounded-xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(15,76,92,0.2)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all mt-4" type="button">
+                    Masuk
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <div class="relative flex items-center justify-center mb-6">
+                    <div class="border-t-2 border-dashed border-gray-200 w-full absolute"></div>
+                    <span class="relative bg-surface px-4 font-bold text-[10px] text-gray-400 uppercase tracking-widest">ATAU MASUK DENGAN</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="flex items-center justify-center gap-2 py-3 border-2 border-gray-200 rounded-xl bg-white font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95">
+                        <img alt="Google Logo" class="w-7 h-7" src="https://icon2.cleanpng.com/lnd/20241121/sc/bd7ce03eb1225083f951fc01171835.webp"/>
+                        <span class="text-sm">Google</span>
+                    </button>
+                    <button class="flex items-center justify-center gap-2 py-3 border-2 border-gray-200 rounded-xl bg-white font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">apple</span><span class="text-sm">Apple</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-10 text-center pb-8">
+                <p class="text-sm text-gray-500">
+                    Belum punya akun? <button onclick="goToSignUp()" class="text-primary-container font-extrabold hand-drawn-underline">Daftar Akun Baru</button>
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- VIEW 3: SIGNUP SCREEN -->
+    <div id="view-signup" class="absolute inset-0 z-[55] bg-surface flex flex-col hidden overflow-y-auto no-scrollbar">
+        <header class="flex items-center px-5 pt-12 pb-2 w-full bg-surface border-b border-surface-container-high sticky top-0 z-50">
+            <button onclick="backToLogin()" class="mr-4 text-gray-800 p-1 hover:bg-surface-container rounded-full transition">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 class="text-gray-800 font-semibold text-lg">Daftar Akun</h1>
+        </header>
+
+        <main class="flex-grow pt-8 pb-12 px-margin-safe max-w-2xl mx-auto w-full">
+            <section class="mb-6">
+                <h2 class="font-['Bricolage_Grotesque'] text-3xl text-primary mb-2 font-black">Gabung LabiZo</h2>
+                <p class="text-sm text-gray-500">Mulai berbagi dan meminjam barang dengan tetangga di sekitarmu hari ini.</p>
+            </section>
+
+            <!-- DIKEMBALIKAN: Input Signup rounded-full seperti snippet -->
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">Nama Lengkap</label>
+                    <div class="relative">
+                        <input class="w-full pl-6 pr-6 py-4 rounded-full border border-gray-200 bg-white focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all text-sm placeholder:text-gray-400" placeholder="Masukkan nama sesuai KTP" type="text"/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">Alamat</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">location_on</span>
+                        <input class="w-full pl-12 pr-6 py-4 rounded-full border border-gray-200 bg-white focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all text-sm placeholder:text-gray-400" placeholder="Contoh: Jl. Sudirman, Perumahan Indah" type="text"/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">Email</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">mail</span>
+                        <input class="w-full pl-12 pr-6 py-4 rounded-full border border-gray-200 bg-white focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all text-sm placeholder:text-gray-400" placeholder="nama@email.com" type="email"/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">No WhatsApp</label>
+                    <div class="flex gap-2">
+                        <div class="flex-shrink-0 w-20 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                            <span class="text-sm font-bold text-gray-700">+62</span>
+                        </div>
+                        <div class="relative flex-grow">
+                            <input class="w-full px-5 py-4 rounded-full border border-gray-200 bg-white focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all text-sm placeholder:text-gray-400" placeholder="8123456789" type="tel"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] text-gray-500 uppercase tracking-wider ml-4">Password</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">lock</span>
+                        <input class="w-full pl-12 pr-12 py-4 rounded-full border border-gray-200 bg-white focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all text-sm placeholder:text-gray-400" placeholder="Minimal 8 karakter" type="password"/>
+                        <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" type="button">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="lender-verification-section" class="mt-6 hidden">
+                    <div class="bg-primary/5 hand-drawn-border border-primary/30 rounded-lg p-4 relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm font-bold text-primary">Verifikasi Identitas Resmi</span>
+                                <span class="material-symbols-outlined text-[16px] text-primary">info</span>
+                            </div>
+                            <div class="bg-primary-container text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-[12px]">lock</span>
+                                <span class="text-[9px] font-bold uppercase tracking-wider">ENCRYPTED</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-white/60 rounded-lg transition">
+                            <span class="material-symbols-outlined text-primary text-4xl mb-2">shield_person</span>
+                            <span class="text-sm font-bold text-primary">Upload Foto KTP/Paspor</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 text-center mt-2">Data diverifikasi secara otomatis dalam hitungan menit</p>
+                    </div>
+                </div>
+
+                <label class="flex items-start gap-3 mt-4 cursor-pointer px-1">
+                    <div class="mt-1">
+                        <input class="w-4 h-4 rounded border border-gray-300 text-primary-container focus:ring-primary-container transition-all cursor-pointer" type="checkbox"/>
+                    </div>
+                    <span class="text-xs text-gray-500 leading-tight">
+                        Saya menyetujui <a class="text-primary-container font-bold underline" href="#">Syarat & Ketentuan</a> serta <a class="text-primary-container font-bold underline" href="#">Kebijakan Privasi</a> LabiZo.
+                    </span>
+                </label>
+
+                <button onclick="handleLogin()" class="w-full bg-primary-container text-white py-4 rounded-full flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md mt-6" type="button">
+                    <span class="font-bold text-base">Daftar Sekarang</span>
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+
+            <div class="mt-8 text-center pb-8">
+                <p class="text-sm text-gray-500">
+                    Sudah punya akun? <button onclick="backToLogin()" class="text-primary-container font-bold hover:underline">Masuk</button>
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEWS: BORROWER APP -->
+    <!-- ========================================================================= -->
+    <div id="view-borrower-app" class="absolute inset-0 z-[60] bg-background flex flex-col hidden">
+        <!-- Dashboard Header -->
+        <header class="w-full flex justify-between items-center px-5 pt-12 pb-3 bg-white/80 backdrop-blur-xl border-b border-primary/10 z-50 shadow-sm">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-black text-primary-container tracking-tight font-['Bricolage_Grotesque']">LabiZo</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="material-symbols-outlined text-slate-500 hover:text-primary-container transition-colors rounded-full" data-icon="notifications">notifications</button>
+                <div class="w-9 h-9 rounded-full border-2 border-primary-container overflow-hidden shadow-sm">
+                    <img src="https://lh3.googleusercontent.com/aida/ADBb0ug0xXF7e3-tQ1tTmHP3X8eZwc91gNDpqz3dT2Yd7VJxH5WBuxd2nMYphf9bmrelSupjvTXQ8U4N9yIVs6R2PA00_Hz3RRhc5MG-9KEKXIyphaI_up1ogyNSTyEO8No6Mu7m3Jq5YESVBTId8mGE0_kEJp_Xih69p2LYRbuE1l76SkzU3Uax3CkHNp4sS9FnPem_3GsCTMGEaKhXmdQJCeJrwZNiIUozH3QWVKiPD_iOpyzpUi6qqX4ljoY" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+        
+        <div id="borrower-content" class="flex-1 overflow-y-auto no-scrollbar pb-32">
+            
+            <!-- HOME TAB -->
+            <div id="borrower-home" class="p-4 space-y-6 fade-in">
+                <!-- Search Bar Section -->
+                <section>
+                    <div class="glass-card organic-shadow rounded-full px-5 py-3 flex items-center gap-3 bg-white/70 border border-slate-200">
+                        <span class="material-symbols-outlined text-outline">search</span>
+                        <input id="search-barang" class="bg-transparent border-none focus:ring-0 w-full text-sm font-medium placeholder:text-outline-variant outline-none" placeholder="Cari kamera, laptop, tenda..." type="text"/>
+                        <button class="bg-primary-container text-white rounded-full p-2 flex items-center justify-center active:scale-95 transition-transform shadow-md">
+                            <span class="material-symbols-outlined text-[18px]">tune</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Categories -->
+                <section class="custom-scrollbar overflow-x-auto flex gap-2 pb-2 -mx-4 px-4">
+                    <button class="flex-shrink-0 bg-primary-container text-white px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform">Semua</button>
+                    <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Kamera</button>
+                    <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Proyektor</button>
+                    <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Laptop</button>
+                    <button class="flex-shrink-0 glass-card text-gray-600 px-5 py-2 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform border border-gray-200 bg-white/60">Outdoor</button>
+                </section>
+
+                <!-- Map Preview -->
+                <!-- DIKEMBALIKAN: rounded-lg sesuai config (2rem) -->
+                <section class="relative h-48 rounded-lg overflow-hidden organic-shadow border border-slate-100 group">
+                    <img class="w-full h-full object-cover grayscale-[0.2] group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJNRDF13Z2cBx1AlJoZlQC7ozEI2C_6A39YTLJ88wWOzvvr90txiEFGacxzhp21XCqIudi97tiNB_bUbrNhmXDTQjX8h0a5kbVSjOdJG_dEc-0AD9IZ_j0zDLz5XT2o0sQVb887rVOYFWZc45ziTx95vkLe7cnHyctzD4rQWmTfzrr9_UTVCPE2qI4q1-4tGDAoERv_Ycnjyzg1Qr0kmo671_gYbR3K_r9-OsQG0rOF5nLLoO4T9LZolKehEld6hSSLq5s-xMpo5Q"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                        <div class="glass-card rounded-lg px-4 py-3 flex items-center justify-between w-full bg-white/20 border border-white/30">
+                            <div>
+                                <p class="text-white text-sm font-semibold">Tersedia di sekitarmu</p>
+                                <p class="text-white/80 text-[11px]">8 item tersedia dalam radius 2km</p>
+                            </div>
+                            <button onclick="openMapExplore()" class="bg-primary-container text-white px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 shadow-md active:scale-95">
+                                <span class="material-symbols-outlined text-[16px]">map</span> Buka Peta
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Promotional Banner (Bento Grid Style) -->
+                <section class="grid grid-cols-2 gap-4">
+                    <div class="bg-primary text-white p-5 rounded-lg flex flex-col justify-between min-h-[160px] relative overflow-hidden shadow-lg organic-shadow">
+                        <div class="z-10">
+                            <h4 class="font-['Bricolage_Grotesque'] font-bold text-lg mb-2">Asuransi LabiZo</h4>
+                            <p class="text-white/80 text-sm max-w-[200px] leading-relaxed">Barang pinjamanmu kini terlindungi hingga Rp10jt.</p>
+                        </div>
+                        <div class="z-10 mt-4">
+                            <button class="bg-white text-primary px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-sm w-max">Cek Detail</button>
+                        </div>
+                        <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10 rotate-12">security</span>
+                    </div>
+                    
+                    <div class="bg-secondary-container text-secondary p-5 rounded-lg flex flex-col justify-between min-h-[160px] relative overflow-hidden shadow-lg organic-shadow">
+                        <div class="z-10">
+                            <h4 class="font-['Bricolage_Grotesque'] font-bold text-lg mb-2">Pasif Income</h4>
+                            <p class="text-secondary/80 text-sm max-w-[200px] leading-relaxed">Punya barang nganggur? Sewakan saja di LabiZo.</p>
+                        </div>
+                        <div class="z-10 mt-4">
+                            <button class="bg-secondary text-secondary-container px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-sm w-max">Mulai Sewakan</button>
+                        </div>
+                        <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10 rotate-12">monetization_on</span>
+                    </div>
+                </section>
+
+                <!-- Item Grid -->
+                <section>
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <h2 class="font-['Bricolage_Grotesque'] font-bold text-lg text-gray-800">Pilihan Terpopuler</h2>
+                        <button class="text-primary-container font-bold text-xs hover:underline">Lihat Semua</button>
+                    </div>
+                    <!-- DIKEMBALIKAN: Script renderBorrowerItems() menggunakan rounded-lg -->
+                    <div class="grid grid-cols-2 gap-3" id="borrower-item-list"></div>
+                </section>
+            </div>
+            
+            <!-- HISTORY TAB -->
+            <div id="borrower-history" class="p-4 hidden fade-in mt-2">
+                <h3 class="font-['Bricolage_Grotesque'] font-bold text-xl text-gray-800 mb-4">Riwayat Peminjaman</h3>
+                <div class="space-y-3" id="history-list"></div>
+            </div>
+            
+            <!-- PROFILE TAB -->
+            <div id="borrower-profile" class="p-4 hidden fade-in mt-2">
+                <!-- Profile Hero Card (DIKEMBALIKAN rounded-lg) -->
+                <div class="glass-card organic-shadow rounded-lg p-6 flex flex-col items-center text-center bg-white/70 mb-4 border border-white/50">
+                    <div class="relative mb-4">
+                        <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-4 ring-primary/10">
+                            <img src="https://lh3.googleusercontent.com/aida/ADBb0ug0xXF7e3-tQ1tTmHP3X8eZwc91gNDpqz3dT2Yd7VJxH5WBuxd2nMYphf9bmrelSupjvTXQ8U4N9yIVs6R2PA00_Hz3RRhc5MG-9KEKXIyphaI_up1ogyNSTyEO8No6Mu7m3Jq5YESVBTId8mGE0_kEJp_Xih69p2LYRbuE1l76SkzU3Uax3CkHNp4sS9FnPem_3GsCTMGEaKhXmdQJCeJrwZNiIUozH3QWVKiPD_iOpyzpUi6qqX4ljoY" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute bottom-0 right-0 bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-white shadow-sm">Verified</div>
+                    </div>
+                    <h1 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-gray-800">Andini Putri</h1>
+                    <p class="text-sm font-medium text-gray-500 mb-3">Student ID: 2201847592</p>
+                    <div class="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10">
+                        <span class="material-symbols-outlined text-primary-container text-sm">verified_user</span>
+                        <span class="font-bold text-[11px] text-primary-container uppercase tracking-widest">Trust Score: 750/1000</span>
+                    </div>
+                </div>
+
+                <!-- Stats Bento Grid (DIKEMBALIKAN rounded-lg) -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
+                        <span class="font-['Bricolage_Grotesque'] font-bold text-2xl text-primary-container block mb-1">12</span>
+                        <span class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Barang Dipinjam</span>
+                    </div>
+                    <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
+                        <span class="font-['Bricolage_Grotesque'] font-bold text-2xl text-primary-container block mb-1">4.9</span>
+                        <span class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Rating Peminjam</span>
+                    </div>
+                </div>
+
+                <!-- Role Switcher (DIKEMBALIKAN rounded-lg) -->
+                <div class="mb-6">
+                    <button onclick="switchToLenderMode()" class="w-full bg-primary-container text-white font-bold py-4 rounded-lg shadow-[0_8px_20px_rgba(15,76,92,0.2)] flex items-center justify-center gap-3 active:scale-95 transition-transform border border-primary-container/80">
+                        <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+                        <span class="text-sm">Beralih ke Mode Pemilik Barang</span>
+                    </button>
+                </div>
+
+                <!-- Menu List (DIKEMBALIKAN rounded-lg) -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-gray-400 uppercase ml-4 mb-2 tracking-widest text-[10px]">Pengaturan Akun</h3>
+                    <a href="#" class="flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-gray-50 transition-colors group border border-white/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary-container flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">person_edit</span>
+                            </div>
+                            <span class="font-bold text-gray-800 text-sm">Edit Profil</span>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-gray-50 transition-colors group border border-white/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary-container flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">security</span>
+                            </div>
+                            <span class="font-bold text-gray-800 text-sm">Keamanan</span>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+                    </a>
+                    <button onclick="logout()" class="w-full flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-red-50 transition-colors group border border-white/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">logout</span>
+                            </div>
+                            <span class="font-bold text-red-500 text-sm">Keluar</span>
+                        </div>
+                        <span class="material-symbols-outlined text-red-200">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation Bar (DIKEMBALIKAN rounded-t-[32px]) -->
+        <nav class="absolute bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-4px_20px_0_rgba(15,76,92,0.08)] rounded-t-[32px] rounded-b-[45px]">
+            <button onclick="switchBorrowerTab('home')" id="b-nav-home" class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full px-5 py-1.5 transition-all duration-200 active:scale-90">
+                <span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">home</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Beranda</span>
+            </button>
+            <button onclick="switchBorrowerTab('history')" id="b-nav-history" class="flex flex-col items-center justify-center text-gray-400 hover:text-primary-container transition-all duration-200 active:scale-90 px-5 py-1.5">
+                <span class="material-symbols-outlined mb-0.5">history</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Riwayat</span>
+            </button>
+            <button onclick="switchBorrowerTab('profile')" id="b-nav-profile" class="flex flex-col items-center justify-center text-gray-400 hover:text-primary-container transition-all duration-200 active:scale-90 px-5 py-1.5">
+                <span class="material-symbols-outlined mb-0.5">person</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Profil</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEWS: LENDER APP -->
+    <!-- ========================================================================= -->
+    <div id="view-lender-app" class="absolute inset-0 z-[60] bg-background flex flex-col hidden">
+        <!-- Dashboard Header -->
+        <header class="w-full flex justify-between items-center px-5 pt-12 pb-3 bg-white/80 backdrop-blur-xl border-b border-primary/10 z-50 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border-2 border-primary/20">
+                    <img src="https://lh3.googleusercontent.com/aida/ADBb0ug0xXF7e3-tQ1tTmHP3X8eZwc91gNDpqz3dT2Yd7VJxH5WBuxd2nMYphf9bmrelSupjvTXQ8U4N9yIVs6R2PA00_Hz3RRhc5MG-9KEKXIyphaI_up1ogyNSTyEO8No6Mu7m3Jq5YESVBTId8mGE0_kEJp_Xih69p2LYRbuE1l76SkzU3Uax3CkHNp4sS9FnPem_3GsCTMGEaKhXmdQJCeJrwZNiIUozH3QWVKiPD_iOpyzpUi6qqX4ljoY" class="w-full h-full object-cover">
+                </div>
+                <h1 class="text-xl font-black text-primary tracking-tight font-['Bricolage_Grotesque']">Dashboard Pemilik</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="material-symbols-outlined text-slate-500 hover:text-primary transition-colors p-2 rounded-full" data-icon="notifications">notifications</button>
+            </div>
+        </header>
+
+        <div id="lender-content" class="flex-1 overflow-y-auto no-scrollbar pb-32">
+            
+            <!-- ITEMS TAB (Dashboard) -->
+            <div id="lender-items" class="p-4 space-y-6 fade-in mt-2">
+                <!-- Summary Card: Pendapatan Bulan Ini -->
+                <section class="relative overflow-hidden p-5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white shadow-xl">
+                    <div class="relative z-10 flex flex-col gap-2">
+                        <span class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Pendapatan Bulan Ini</span>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-base font-medium">Rp</span>
+                            <h2 class="font-['Bricolage_Grotesque'] font-black text-4xl">4.250.000</h2>
+                        </div>
+                        <div class="mt-2 flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full w-fit backdrop-blur-md">
+                            <span class="material-symbols-outlined text-[16px]">trending_up</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider">+12% dari bulan lalu</span>
+                        </div>
+                    </div>
+                    <!-- Decorative circle -->
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                </section>
+
+                <!-- Stats Bento Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col gap-1 border border-slate-100 bg-white/70">
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Total Barang</span>
+                        <span class="font-['Bricolage_Grotesque'] text-2xl font-black text-primary">24</span>
+                    </div>
+                    <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col gap-1 border border-slate-100 bg-white/70">
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Sedang Dipinjam</span>
+                        <span class="font-['Bricolage_Grotesque'] text-2xl font-black text-secondary">8</span>
+                    </div>
+                    <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col gap-1 border border-slate-100 bg-white/70">
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Pesanan Aktif</span>
+                        <span class="font-['Bricolage_Grotesque'] text-2xl font-black text-primary">5</span>
+                    </div>
+                    <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col gap-1 border border-slate-100 bg-white/70">
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Rating Pemilik</span>
+                        <div class="flex items-center gap-1">
+                            <span class="font-['Bricolage_Grotesque'] text-2xl font-black text-primary">4.9</span>
+                            <span class="material-symbols-outlined text-amber-400 text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Barang Saya -->
+                <section class="space-y-4">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-gray-800">Barang Saya</h3>
+                        <button onclick="openAddItemModal()" class="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:opacity-90 active:scale-95 duration-200">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider">Tambah</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Dynamic List of Current Listings (Generated by renderLenderItems JS) -->
+                    <div id="lender-items-list" class="grid grid-cols-1 gap-4"></div>
+                </section>
+            </div>
+
+            <!-- REQUESTS TAB (Pesanan Terbaru) -->
+            <div id="lender-requests" class="p-4 hidden fade-in mt-2">
+                <h3 class="font-['Bricolage_Grotesque'] font-bold text-xl text-gray-800 mb-4 px-1">Pesanan Terbaru</h3>
+                <div id="requests-list" class="space-y-3"></div>
+            </div>
+
+            <!-- PROFILE TAB -->
+            <div id="lender-profile" class="p-4 hidden fade-in mt-2">
+                 <!-- Profile Hero Card (DIKEMBALIKAN rounded-lg) -->
+                 <div class="glass-card organic-shadow rounded-lg p-6 flex flex-col items-center text-center bg-white/70 mb-4 border border-white/50">
+                    <div class="relative mb-4">
+                        <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-4 ring-primary/10">
+                            <img src="https://lh3.googleusercontent.com/aida/ADBb0ug0xXF7e3-tQ1tTmHP3X8eZwc91gNDpqz3dT2Yd7VJxH5WBuxd2nMYphf9bmrelSupjvTXQ8U4N9yIVs6R2PA00_Hz3RRhc5MG-9KEKXIyphaI_up1ogyNSTyEO8No6Mu7m3Jq5YESVBTId8mGE0_kEJp_Xih69p2LYRbuE1l76SkzU3Uax3CkHNp4sS9FnPem_3GsCTMGEaKhXmdQJCeJrwZNiIUozH3QWVKiPD_iOpyzpUi6qqX4ljoY" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute bottom-0 right-0 bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-white shadow-sm">Verified</div>
+                    </div>
+                    <h1 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-gray-800">Andini Putri</h1>
+                    <p class="text-sm font-medium text-gray-500 mb-3">Student ID: 2201847592</p>
+                    <div class="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10">
+                        <span class="material-symbols-outlined text-primary-container text-sm">verified_user</span>
+                        <span class="font-bold text-[11px] text-primary-container uppercase tracking-widest">Lender Score: 850/1000</span>
+                    </div>
+                </div>
+
+                <!-- Stats Bento Grid (DIKEMBALIKAN rounded-lg) -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
+                        <span class="font-['Bricolage_Grotesque'] font-bold text-3xl text-primary-container block mb-1">25</span>
+                        <span class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Total Disewa</span>
+                    </div>
+                    <div class="glass-card organic-shadow rounded-lg p-5 text-center bg-white/70 border border-white/50">
+                        <span class="font-['Bricolage_Grotesque'] font-bold text-3xl text-primary-container block mb-1">5.0</span>
+                        <span class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Rating Pemilik</span>
+                    </div>
+                </div>
+
+                <!-- Role Switcher (DIKEMBALIKAN rounded-lg) -->
+                <div class="mb-6">
+                    <button onclick="switchToBorrowerMode()" class="w-full bg-white text-primary-container font-bold py-4 rounded-lg shadow-md flex items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-200">
+                        <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+                        <span class="text-sm">Beralih ke Mode Peminjam</span>
+                    </button>
+                </div>
+
+                <!-- Menu List (DIKEMBALIKAN rounded-lg) -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-gray-400 uppercase ml-4 mb-2 tracking-widest text-[10px]">Pengaturan Akun</h3>
+                    <button onclick="logout()" class="w-full flex items-center justify-between p-4 bg-white/80 rounded-lg organic-shadow hover:bg-red-50 transition-colors group border border-white/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">logout</span>
+                            </div>
+                            <span class="font-bold text-red-500 text-sm">Keluar</span>
+                        </div>
+                        <span class="material-symbols-outlined text-red-200">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="absolute bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-2xl rounded-t-[32px] rounded-b-[45px] border-t border-primary/10 shadow-[0_-4px_20px_0_rgba(15,76,92,0.08)]">
+            <button onclick="switchLenderTab('items')" id="l-nav-items" class="flex flex-col items-center justify-center bg-primary/10 text-primary-container rounded-full px-5 py-1.5 transition-transform duration-200 active:scale-90">
+                <span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Barang</span>
+            </button>
+            <button onclick="switchLenderTab('requests')" id="l-nav-requests" class="flex flex-col items-center justify-center text-slate-400 hover:text-primary-container transition-colors px-5 py-1.5 active:scale-90">
+                <span class="material-symbols-outlined mb-0.5">receipt_long</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Pesanan</span>
+            </button>
+            <button onclick="switchLenderTab('profile')" id="l-nav-profile" class="flex flex-col items-center justify-center text-slate-400 hover:text-primary-container transition-colors px-5 py-1.5 active:scale-90">
+                <span class="material-symbols-outlined mb-0.5">person</span>
+                <span class="font-['Bricolage_Grotesque'] text-[10px] font-bold tracking-wide">Profil</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- MAP EXPLORE FULL VIEW -->
+    <div id="view-map-explore" class="absolute inset-0 z-[120] flex flex-col hidden slide-up map-bg overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-primary/10 shadow-[0_4px_20px_rgba(15,76,92,0.08)]">
+            <div class="flex justify-between items-center w-full px-6 py-4 pt-12">
+                <div class="flex items-center gap-4">
+                    <button onclick="closeMapExplore()" class="active:scale-95 transition-transform duration-200">
+                        <span class="material-symbols-outlined text-primary-container text-[24px]">arrow_back</span>
+                    </button>
+                    <h1 class="text-2xl font-black text-primary-container tracking-tight font-['Bricolage_Grotesque']">LabiZo</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden shadow-sm">
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ug0xXF7e3-tQ1tTmHP3X8eZwc91gNDpqz3dT2Yd7VJxH5WBuxd2nMYphf9bmrelSupjvTXQ8U4N9yIVs6R2PA00_Hz3RRhc5MG-9KEKXIyphaI_up1ogyNSTyEO8No6Mu7m3Jq5YESVBTId8mGE0_kEJp_Xih69p2LYRbuE1l76SkzU3Uax3CkHNp4sS9FnPem_3GsCTMGEaKhXmdQJCeJrwZNiIUozH3QWVKiPD_iOpyzpUi6qqX4ljoY"/>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Map Area -->
+        <div class="flex-1 relative">
+            <!-- Simulated Pins -->
+            <div onclick="openItemDetail(3); closeMapExplore()" class="absolute top-1/4 left-1/4 group cursor-pointer active:scale-90 transition-all z-20">
+                <div class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center organic-shadow border-4 border-white shadow-lg mx-auto">
+                    <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                </div>
+                <div class="mt-2 bg-white px-2 py-1 rounded-full text-xs font-bold text-primary organic-shadow border border-slate-100 text-center whitespace-nowrap">Rp 40rb/hari</div>
+            </div>
+            <div onclick="openItemDetail(1); closeMapExplore()" class="absolute bottom-1/3 right-[15%] group cursor-pointer active:scale-90 transition-all z-20">
+                <div class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center organic-shadow border-4 border-white shadow-lg mx-auto">
+                    <span class="material-symbols-outlined text-[20px]">handyman</span>
+                </div>
+                <div class="mt-2 bg-white px-2 py-1 rounded-full text-xs font-bold text-primary organic-shadow border border-slate-100 text-center whitespace-nowrap">Rp 75rb/hari</div>
+            </div>
+            <div onclick="openItemDetail(2); closeMapExplore()" class="absolute top-1/2 left-[60%] group cursor-pointer active:scale-90 transition-all z-20">
+                <div class="bg-secondary-container text-secondary w-12 h-12 rounded-full flex items-center justify-center organic-shadow border-4 border-white shadow-lg mx-auto">
+                    <span class="material-symbols-outlined text-[20px]">holiday_village</span>
+                </div>
+                <div class="mt-2 bg-white px-2 py-1 rounded-full text-xs font-bold text-secondary organic-shadow border border-slate-100 text-center whitespace-nowrap">Rp 50rb/hari</div>
+            </div>
+            
+            <!-- Current Location -->
+            <div class="absolute top-[60%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 z-10">
+                <div class="relative flex items-center justify-center">
+                    <div class="absolute w-12 h-12 bg-blue-500/20 rounded-full animate-ping"></div>
+                    <div class="relative w-5 h-5 bg-blue-500 border-2 border-white rounded-full shadow-md"></div>
+                </div>
+            </div>
+
+            <!-- Floating UI Overlays Top -->
+            <div class="absolute inset-x-0 top-4 px-5 space-y-4 z-30 pointer-events-none">
+                <!-- Glassmorphic Search Bar -->
+                <div class="glass-card flex items-center p-2 px-4 rounded-full organic-shadow border border-white/40 bg-white/80 pointer-events-auto">
+                    <span class="material-symbols-outlined text-gray-400">search</span>
+                    <input class="bg-transparent border-none focus:ring-0 w-full text-sm font-medium ml-2 text-gray-800 placeholder-gray-500 outline-none" placeholder="Cari di sekitar..." type="text"/>
+                    <span class="material-symbols-outlined text-primary-container ml-2">tune</span>
+                </div>
+                <!-- Radius Selector -->
+                <div class="flex justify-center pointer-events-auto">
+                    <div class="glass-card p-1 rounded-full flex gap-1 organic-shadow border border-white/40 bg-white/60">
+                        <button class="px-5 py-2 rounded-full bg-primary-container text-white font-bold text-[10px] uppercase tracking-wider transition-all shadow-md">1km</button>
+                        <button class="px-5 py-2 rounded-full hover:bg-white/80 text-gray-600 font-bold text-[10px] uppercase tracking-wider transition-all">3km</button>
+                        <button class="px-5 py-2 rounded-full hover:bg-white/80 text-gray-600 font-bold text-[10px] uppercase tracking-wider transition-all">5km</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Item Bottom Sheet Preview (DIKEMBALIKAN rounded-lg) -->
+            <div class="absolute inset-x-0 bottom-6 z-30 px-5 pb-8">
+                <div class="glass-card p-4 rounded-lg organic-shadow border border-white/60 bg-white/90 w-full backdrop-blur-xl transform translate-y-0 transition-transform duration-500">
+                    <div class="flex gap-4">
+                        <div class="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 shadow-inner">
+                            <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-['Bricolage_Grotesque'] font-bold text-base text-primary line-clamp-1">Bor Listrik Makita</h3>
+                                    <div class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ml-1">Tersedia</div>
+                                </div>
+                                <p class="text-gray-500 text-[11px] mt-1">Milik Andini • 1.2km dari kamu</p>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Harga Sewa</span>
+                                    <span class="font-black text-lg text-gray-800">Rp 75k<span class="text-xs text-gray-500 font-medium">/hr</span></span>
+                                </div>
+                                <button onclick="openItemDetail(1); closeMapExplore()" class="bg-primary-container px-5 py-2 rounded-full text-white font-bold text-[11px] uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-md">Detail</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Borrower Item Detail, Booking, Add Item) -->
+    <!-- DIKEMBALIKAN: Panel modal menggunakan rounded-lg/3xl agar konsisten -->
+    <div id="modal-item-detail" class="absolute inset-0 z-[130] hidden bg-gray-50 flex flex-col slide-up">
+        <div class="relative h-72 bg-gray-200">
+            <img id="detail-img" src="" class="w-full h-full object-cover">
+            <button onclick="closeItemDetail()" class="absolute top-12 left-4 bg-white/80 backdrop-blur-md p-2 rounded-full text-gray-800 shadow-md hover:bg-white transition"><span class="material-symbols-outlined">arrow_back</span></button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-5 py-5 bg-white rounded-t-3xl -mt-6 relative z-10 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] pb-32">
+            <div class="flex justify-between items-start mb-1">
+                <h2 id="detail-title" class="text-xl font-extrabold text-gray-800 leading-tight">Nama Barang</h2>
+            </div>
+            <div class="flex items-baseline gap-1 mt-1 mb-4">
+                <span id="detail-price" class="text-primary-container font-black text-2xl">Rp 50.000</span><span class="text-sm font-medium text-gray-500">/hari</span>
+            </div>
+            <div class="bg-gray-50 border border-gray-100 p-3 rounded-lg flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-gray-200 rounded-full shrink-0 flex justify-center items-center"><span class="material-symbols-outlined text-[20px] text-gray-400">person</span></div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-gray-800">Pemilik Barang</h3>
+                    <div class="flex items-center gap-1 text-[10px] text-gray-500 mt-0.5"><span class="material-symbols-outlined text-[14px]">location_on</span> <span id="detail-location">1.2 km dari kamu</span></div>
+                </div>
+            </div>
+            <div class="mb-5">
+                <p class="font-bold text-gray-800 text-sm mb-2">Deskripsi</p>
+                <p id="detail-desc" class="text-xs text-gray-600 leading-relaxed"></p>
+            </div>
+            <div class="mb-5 bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
+                <p class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary-container">event_available</span> Ketersediaan Bulan Ini</p>
+                <div id="calendar-detail" class="grid grid-cols-7 gap-1 text-center text-xs font-medium"></div>
+                <div class="flex gap-3 mt-3 text-[10px] text-gray-500 justify-center">
+                    <span class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded bg-primary-container/30 border border-primary-container/50"></div> Tersedia</span>
+                    <span class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded bg-gray-100 border border-gray-200"></div> Dipinjam</span>
+                </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 p-4 rounded-lg flex items-start gap-3">
+                <div class="bg-blue-100 p-2 rounded-full text-blue-600 shrink-0 mt-0.5"><span class="material-symbols-outlined text-[18px]">gpp_good</span></div>
+                <div>
+                    <h4 class="text-xs font-bold text-blue-900 mb-1">Aman dengan Smart Escrow</h4>
+                    <p class="text-[10px] text-blue-700 leading-relaxed">Deposit 100% akan ditahan otomatis. Jika barang dikembalikan aman, deposit langsung kembali ke saldo Anda.</p>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-5 py-4 pb-8 z-20 flex gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+            <button class="w-14 h-14 border-2 border-gray-200 rounded-lg flex items-center justify-center text-green-500 hover:bg-green-50 transition"><span class="material-symbols-outlined">chat</span></button>
+            <button onclick="openBookingModal()" class="flex-1 bg-primary-container text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-primary transition active:scale-95">Lanjut Booking</button>
+        </div>
+    </div>
+
+    <!-- Booking Modal (DIKEMBALIKAN rounded-lg) -->
+    <div id="modal-booking" class="absolute inset-0 z-[140] hidden bg-black/70 backdrop-blur-sm flex items-center justify-center fade-in">
+        <div class="bg-white w-[88%] rounded-lg p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                <h3 class="font-bold text-lg text-gray-800">Konfirmasi Escrow</h3>
+                <button onclick="closeBookingModal()" class="p-1 text-gray-400 hover:bg-gray-100 rounded-full"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <div class="my-4 space-y-3 text-sm">
+                <div class="flex justify-between text-gray-600"><span>Biaya Sewa / Hari</span><span id="booking-price" class="font-medium text-gray-800">Rp 0</span></div>
+                <div class="flex justify-between items-center text-gray-600"><span>Lama Pinjam</span><div class="flex items-center gap-2"><input type="number" id="booking-days" class="w-16 border border-gray-300 rounded-lg p-1.5 text-center font-medium outline-none focus:border-primary-container" value="1" min="1"> hari</div></div>
+                <div class="flex justify-between items-center text-gray-600 pt-2 border-t border-dashed border-gray-200"><span>Biaya Layanan</span><span class="font-medium text-gray-800">Rp 2.000</span></div>
+                <div class="flex justify-between bg-primary/5 p-2.5 rounded-lg border border-gray-100 mt-2">
+                    <span class="font-bold text-gray-700 flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-secondary-container">lock</span> Uang Deposit</span>
+                    <span id="booking-deposit" class="font-bold text-gray-800">Rp 0</span>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg mt-4 border border-gray-100 text-center">
+                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Total Pembayaran (via QRIS)</p>
+                <p id="booking-total" class="text-2xl font-black text-primary-container">Rp 0</p>
+            </div>
+
+            <button onclick="processBooking()" class="w-full mt-6 bg-primary-container text-white font-bold py-3.5 rounded-lg shadow-md hover:bg-primary transition active:scale-95 flex justify-center items-center gap-2">
+                Bayar & Kunci Jadwal <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-add-item" class="absolute inset-0 z-[130] hidden bg-gray-50 flex flex-col slide-up">
+        <div class="pt-14 px-5 pb-4 bg-white text-gray-800 flex items-center justify-between shadow-sm sticky top-0 z-10 border-b border-gray-100">
+            <button onclick="closeAddItemModal()" class="p-2 hover:bg-gray-100 rounded-full -ml-2"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="font-bold text-lg">Tambah Barang</h3>
+            <div class="w-10"></div>
+        </div>
+        <div class="p-5 space-y-4 flex-1 overflow-y-auto pb-24">
+            <div>
+                <label class="text-xs font-bold text-gray-500 mb-1 block">Nama Barang</label>
+                <!-- DIKEMBALIKAN rounded-lg -->
+                <input type="text" id="new-item-name" placeholder="Contoh: Bor Listrik Bosch" class="w-full border border-gray-200 rounded-lg p-3.5 outline-none focus:border-primary-container text-sm bg-white shadow-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 mb-1 block">Kategori</label>
+                    <select id="new-item-cat" class="w-full border border-gray-200 rounded-lg p-3.5 outline-none focus:border-primary-container text-sm bg-white shadow-sm">
+                        <option>Alat Camping</option><option>Elektronik</option><option>Perabot</option><option>Alat Pesta</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 mb-1 block">Harga Sewa/Hari</label>
+                    <input type="number" id="new-item-price" placeholder="Rp" class="w-full border border-gray-200 rounded-lg p-3.5 outline-none focus:border-primary-container text-sm bg-white shadow-sm">
+                </div>
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-500 mb-1 block">Foto Barang Asli</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-white hover:bg-gray-50 cursor-pointer transition">
+                    <span class="material-symbols-outlined text-[32px] text-gray-400 mx-auto mb-2">cloud_upload</span>
+                    <p class="text-xs font-medium text-gray-500">Klik untuk upload foto</p>
+                    <input type="file" id="new-item-photo" accept="image/*" class="hidden">
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                <p class="font-bold text-sm text-gray-800 mb-2">Pilih Tanggal Ketersediaan</p>
+                <p class="text-[10px] text-gray-500 mb-3">Tandai tanggal dimana barang bebas disewa bulan ini.</p>
+                <div id="calendar-add" class="grid grid-cols-7 gap-1.5 mt-2 text-xs"></div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-5 z-20 pb-8 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+            <button onclick="addNewItem()" class="w-full bg-primary-container text-white font-bold py-3.5 rounded-lg shadow-md hover:bg-primary active:scale-95 transition flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">save</span> Simpan & Tayangkan
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-msg" class="toast-notif hidden"></div>
+
+</div>
+
+<script>
+    // Global state
+    let currentRole = 'borrower';
+    let selectedItem = null;
+    
+    // UPDATED: Added relevant items for students
+    let dummyItems = [
+        { id: 1, name: "Bor Listrik Makita Hitam", price: 75000, category: "Elektronik", location: "Keputih, 1.2km", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400", desc: "Bor listrik 550W, kondisi mulus 90%, cocok untuk proyek rumah. Mata bor lengkap. Wajib dibersihkan setelah dipakai ya.", availableDates: [5,6,7,12,13,14, 20, 21, 22] },
+        { id: 2, name: "Tenda Dome 4 Orang", price: 50000, category: "Alat Camping", location: "Sukolilo, 2.5km", image: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=400", desc: "Tenda camping kapasitas 4 orang, anti air (double layer), lengkap dengan frame poles dan pasak. Nyaman buat muncak.", availableDates: [10,11,12,18,19,20,21] },
+        { id: 3, name: "Proyektor Mini Portable", price: 40000, category: "Elektronik", location: "Gebang, 0.8km", image: "https://raw.githubusercontent.com/abelliaayu28/LABIZO-Final-Project-KBT/refs/heads/main/data/proyektor%20portable.jpg", desc: "Proyektor mini cocok untuk nonton film di kosan. HDMI ready, sudah ada speaker internal.", availableDates: [3,4,5,15,16,17, 28, 29] },
+        { id: 4, name: "Tripod Kamera Takara", price: 20000, category: "Kamera", location: "Keputih, 0.5km", image: "https://images.unsplash.com/photo-1527011045974-4b5cb3c8cdba?auto=format&fit=crop&q=80&w=400", desc: "Tripod kokoh untuk DSLR/Mirrorless, tinggi maksimal 1.5 meter. Ada sarungnya.", availableDates: [1,2,3,4,8,9,10,11,12] },
+        { id: 5, name: "Ringlight + Tripod HP", price: 15000, category: "Elektronik", location: "Mulyosari, 1.5km", image: "https://raw.githubusercontent.com/abelliaayu28/LABIZO-Final-Project-KBT/refs/heads/main/data/ring%20tripod%20hp.jpg", desc: "Ringlight LED 26cm dengan 3 mode warna cahaya, sudah termasuk tripod untuk HP. Cocok buat nugas video.", availableDates: [1,2,5,6,7,8,15,16,17] },
+        { id: 6, name: "Kompor Portable Camping", price: 15000, category: "Outdoor", location: "Sukolilo, 2.0km", image: "https://raw.githubusercontent.com/abelliaayu28/LABIZO-Final-Project-KBT/refs/heads/main/data/komp%20portable.webp", desc: "Kompor kotak angin portable, sangat ringan dibawa muncak. Gas beli sendiri ya.", availableDates: [10,11,12,18,19,20] }
+    ];
+    let lenderItems = [
+        { id: 101, name: "Mesin Jahit Portable", price: 60000, category: "Alat Rumah", location: "Rungkut", image: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&q=80&w=400", availableDates: [1,2,3,4,5,8,9], status: "Tersedia" },
+        { id: 102, name: "Kamera Sony A7III + Lensa", price: 250000, category: "Elektronik", location: "Mulyosari", image: "https://images.unsplash.com/photo-1516724562728-afc824a36e84?auto=format&fit=crop&q=80&w=400", availableDates: [10,11,12,15], status: "Tersedia" }
+    ];
+
+    // UPDATED: Pre-populate bookings array so both history and requests share state
+    let bookings = [
+        { id: 201, user: "Siti Nurhaliza", item: dummyItems[1], days: 2, total: "Rp 100.000", status: "Menunggu Persetujuan", time: "2 Jam Lalu" },
+        { id: 202, user: "Andini Putri", item: dummyItems[2], days: 1, total: "Rp 40.000", status: "Sedang Dipinjam", time: "Kemarin" }
+    ];
+
+    // Helper functions
+    function showToast(msg) {
+        let toast = document.getElementById('toast-msg');
+        toast.innerText = msg;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2500);
+    }
+
+    function setStatusBarDark(isDark) {
+        const time = document.getElementById('status-time');
+        const icons = document.getElementById('status-icons');
+        if(isDark) {
+            time.classList.remove('text-white'); time.classList.add('text-gray-800');
+            icons.classList.remove('text-white'); icons.classList.add('text-gray-800');
+        } else {
+            time.classList.remove('text-gray-800'); time.classList.add('text-white');
+            icons.classList.remove('text-gray-800'); icons.classList.add('text-white');
+        }
+    }
+
+    function enterApp(role) { 
+        if(role) setRole(role);
+        document.getElementById('view-splash').style.transform = 'translateY(-100%)';
+        document.getElementById('view-login').classList.remove('hidden'); 
+        setTimeout(() => {
+            document.getElementById('view-splash').classList.add('hidden');
+            setStatusBarDark(true); 
+        }, 500);
+    }
+
+    function backToSplash() {
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-splash').classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('view-splash').style.transform = 'translateY(0)';
+        }, 10);
+        setStatusBarDark(false);
+    }
+    
+    function setRole(role) { 
+        currentRole = role; 
+        let btnB = document.getElementById('btn-role-borrower');
+        let btnL = document.getElementById('btn-role-lender'); 
+        
+        let activeClass = "flex-1 py-3 px-4 rounded-xl bg-white shadow-[2px_2px_0px_0px_rgba(15,76,92,0.1)] text-primary-container font-bold transition-all transform active:scale-95";
+        let inactiveClass = "flex-1 py-3 px-4 rounded-xl text-gray-500 font-medium hover:text-primary transition-colors";
+
+        if(role === 'borrower'){ 
+            btnB.className = activeClass; 
+            btnL.className = inactiveClass; 
+            if(document.getElementById('lender-verification-section')) {
+                document.getElementById('lender-verification-section').classList.add('hidden');
+            }
+        } else { 
+            btnL.className = activeClass; 
+            btnB.className = inactiveClass; 
+            if(document.getElementById('lender-verification-section')) {
+                document.getElementById('lender-verification-section').classList.remove('hidden'); 
+            }
+        } 
+    }
+    
+    function goToSignUp() { 
+        document.getElementById('view-login').classList.add('hidden'); 
+        document.getElementById('view-signup').classList.remove('hidden'); 
+        if(currentRole === 'lender') document.getElementById('lender-verification-section').classList.remove('hidden'); 
+        else document.getElementById('lender-verification-section').classList.add('hidden'); 
+    }
+    
+    function backToLogin() { 
+        document.getElementById('view-signup').classList.add('hidden'); 
+        document.getElementById('view-login').classList.remove('hidden'); 
+    }
+    
+    function handleLogin() { 
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-signup').classList.add('hidden');
+        
+        if(currentRole === 'borrower') { 
+            document.getElementById('view-borrower-app').classList.remove('hidden'); 
+            document.getElementById('view-lender-app').classList.add('hidden');
+            switchBorrowerTab('home');
+            renderBorrowerItems(); 
+            setStatusBarDark(true);
+        } else { 
+            document.getElementById('view-lender-app').classList.remove('hidden'); 
+            document.getElementById('view-borrower-app').classList.add('hidden');
+            switchLenderTab('items');
+            renderLenderItems(); 
+            setStatusBarDark(true);
+        } 
+    }
+    
+    function logout() { 
+        document.getElementById('view-borrower-app').classList.add('hidden'); 
+        document.getElementById('view-lender-app').classList.add('hidden'); 
+        document.getElementById('view-login').classList.remove('hidden'); 
+        setStatusBarDark(true);
+    }
+    
+    function switchToLenderMode() { 
+        currentRole = 'lender';
+        handleLogin();
+    }
+
+    function switchToBorrowerMode() {
+        currentRole = 'borrower';
+        handleLogin();
+    }
+    
+    // Maps
+    function openMapExplore() {
+        document.getElementById('view-map-explore').classList.remove('hidden');
+        setStatusBarDark(true);
+    }
+    
+    function closeMapExplore() {
+        document.getElementById('view-map-explore').classList.add('hidden');
+    }
+
+    // Borrower Tabs
+    function switchBorrowerTab(tab) { 
+        document.getElementById('borrower-home').classList.add('hidden'); 
+        document.getElementById('borrower-history').classList.add('hidden'); 
+        document.getElementById('borrower-profile').classList.add('hidden'); 
+        document.getElementById(`borrower-${tab}`).classList.remove('hidden'); 
+        
+        ['home','history','profile'].forEach(t => { 
+            let btn = document.getElementById(`b-nav-${t}`);
+            if(t === tab) {
+                btn.className = "flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full px-5 py-1.5 transition-all duration-200 active:scale-90";
+                btn.firstElementChild.style.fontVariationSettings = "'FILL' 1";
+            } else {
+                btn.className = "flex flex-col items-center justify-center text-gray-400 hover:text-primary-container transition-all duration-200 active:scale-90 px-5 py-1.5";
+                btn.firstElementChild.style.fontVariationSettings = "'FILL' 0";
+            }
+        }); 
+
+        if(tab === 'history') {
+            renderHistory();
+        }
+    }
+    
+    function renderBorrowerItems() { 
+        let container = document.getElementById('borrower-item-list'); 
+        container.innerHTML = ''; 
+        dummyItems.forEach(item => { 
+            // DIKEMBALIKAN PENGGUNAAN rounded-lg (BERDASARKAN CONFIG) AGAR RAPI SEPERTI SEMULA
+            let card = `
+            <div onclick="openItemDetail(${item.id})" class="bg-surface-container-lowest rounded-lg overflow-hidden organic-shadow border border-slate-100 flex flex-col hover:-translate-y-1 transition-transform duration-300 cursor-pointer">
+                <div class="relative h-32">
+                    <img src="${item.image}" class="w-full h-full object-cover">
+                    <div class="absolute top-2 left-2 bg-green-500/10 backdrop-blur-md border border-green-500/20 text-green-700 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider">Tersedia</div>
+                    <button class="absolute top-2 right-2 w-7 h-7 glass-card rounded-full flex items-center justify-center text-gray-600 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">favorite</span>
+                    </button>
+                </div>
+                <div class="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-['Bricolage_Grotesque'] font-bold text-sm text-gray-800 line-clamp-1">${item.name}</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-teal-50 px-1.5 py-0.5 rounded-md w-max mb-1">
+                            <span class="material-symbols-outlined text-teal-600 text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-teal-700 text-[10px] font-bold">4.9</span>
+                        </div>
+                        <p class="text-gray-500 text-[9px] line-clamp-1 mb-2"><span class="material-symbols-outlined text-[10px]">location_on</span> ${item.location}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <div>
+                            <p class="text-gray-400 text-[8px] uppercase font-bold tracking-wider">Harga Sewa</p>
+                            <p class="text-primary-container font-black text-xs">Rp${(item.price/1000)}k<span class="text-gray-400 font-medium text-[8px]">/hari</span></p>
+                        </div>
+                        <div class="flex items-center gap-1 bg-primary/5 px-2 py-1 rounded-full">
+                            <span class="material-symbols-outlined text-primary-container text-[10px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                            <span class="text-primary-container text-[8px] font-bold">Trust 98</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`; 
+            container.innerHTML += card; 
+        }); 
+    }
+    
+    function openItemDetail(id) { 
+        selectedItem = dummyItems.find(i=>i.id===id); 
+        document.getElementById('modal-item-detail').classList.remove('hidden'); 
+        document.getElementById('detail-img').src = selectedItem.image; 
+        document.getElementById('detail-title').innerText = selectedItem.name; 
+        document.getElementById('detail-price').innerText = `Rp ${selectedItem.price.toLocaleString('id-ID')}`; 
+        document.getElementById('detail-location').innerText = selectedItem.location; 
+        document.getElementById('detail-desc').innerText = selectedItem.desc; 
+        renderCalendarDetail(selectedItem.availableDates); 
+        setStatusBarDark(true);
+    }
+    
+    function closeItemDetail() { 
+        document.getElementById('modal-item-detail').classList.add('hidden'); 
+    }
+    
+    function renderCalendarDetail(availDates) { 
+        let container = document.getElementById('calendar-detail'); 
+        container.innerHTML = ''; 
+        for(let i=1;i<=30;i++){ 
+            let day = document.createElement('div'); 
+            day.className = `p-1.5 rounded-lg text-xs font-bold border ${availDates.includes(i)?'bg-primary-container/20 border-primary-container/30 text-gray-800':'bg-gray-50 border-gray-100 text-gray-300'}`; 
+            day.innerText = i; 
+            container.appendChild(day); 
+        } 
+    }
+    
+    function openBookingModal() { 
+        if(!selectedItem) return; 
+        document.getElementById('modal-booking').classList.remove('hidden'); 
+        document.getElementById('booking-price').innerText = `Rp ${selectedItem.price.toLocaleString('id-ID')}`; 
+        updateBookingTotal(); 
+        document.getElementById('booking-days').oninput = ()=>updateBookingTotal(); 
+    }
+    
+    function updateBookingTotal() { 
+        let days = parseInt(document.getElementById('booking-days').value) || 1; 
+        let sewa = selectedItem.price * days;
+        let deposit = sewa * 10;
+        let service = 2000;
+        let total = sewa + deposit + service; 
+        document.getElementById('booking-deposit').innerText = `Rp ${deposit.toLocaleString('id-ID')}`;
+        document.getElementById('booking-total').innerText = `Rp ${total.toLocaleString('id-ID')}`; 
+    }
+    
+    function closeBookingModal() { document.getElementById('modal-booking').classList.add('hidden'); }
+    
+    function processBooking() { 
+        const btn = document.querySelector('#modal-booking button.bg-primary-container');
+        const ogText = btn.innerHTML;
+        btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">sync</span> Memproses...`;
+        
+        setTimeout(() => {
+            showToast("Pesanan Dikirim. Menunggu Persetujuan Pemilik!"); 
+            closeBookingModal(); 
+            closeItemDetail(); 
+            
+            // Push to state
+            bookings.unshift({
+                id: Date.now(),
+                user: "Andini Putri",
+                item: selectedItem,
+                days: document.getElementById('booking-days').value,
+                total: document.getElementById('booking-total').innerText,
+                status: 'Menunggu Persetujuan',
+                time: "Baru Saja"
+            }); 
+            
+            btn.innerHTML = ogText;
+            switchBorrowerTab('history'); 
+        }, 1500);
+    }
+    
+    function renderHistory() { 
+        let container = document.getElementById('history-list'); 
+        
+        if(bookings.length === 0) {
+            container.innerHTML='<div class="text-center py-10"><span class="material-symbols-outlined text-[48px] text-gray-300 mx-auto mb-2">inbox</span><p class="text-gray-400 text-sm font-medium">Belum ada riwayat peminjaman</p></div>'; 
+            return;
+        }
+
+        container.innerHTML = bookings.map(b => {
+            let statusBadge = '';
+            let actionButton = '';
+
+            if (b.status === 'Menunggu Persetujuan') {
+                statusBadge = '<span class="bg-yellow-100 text-yellow-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Menunggu Persetujuan</span>';
+                actionButton = '<span class="text-gray-400 text-[10px]">Menunggu Pemilik...</span>';
+            } else if (b.status === 'Sedang Dipinjam') {
+                statusBadge = '<span class="bg-green-100 text-green-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Sedang Dipinjam</span>';
+                actionButton = `<button onclick="completeBooking(${b.id})" class="text-primary-container text-[10px] font-bold underline">Kembalikan Barang</button>`;
+            } else if (b.status === 'Ditolak') {
+                statusBadge = '<span class="bg-red-100 text-red-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Ditolak</span>';
+                actionButton = '<span class="text-red-400 text-[10px]">Pesanan Dibatalkan</span>';
+            } else if (b.status === 'Selesai') {
+                statusBadge = '<span class="bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Selesai</span>';
+                actionButton = '<span class="text-blue-400 text-[10px]">Sudah Dikembalikan</span>';
+            }
+
+            return `
+            <div class="bg-white p-4 rounded-lg organic-shadow border border-gray-100 flex gap-4 items-center mb-3">
+                <div class="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden shrink-0"><img src="${b.item.image}" class="w-full h-full object-cover"></div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm text-gray-800 line-clamp-1">${b.item.name}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Durasi: ${b.days} hari</p>
+                    <div class="flex flex-col items-start gap-2 mt-2">
+                        ${statusBadge}
+                        ${actionButton}
+                    </div>
+                </div>
+            </div>`;
+        }).join(''); 
+    }
+
+    function completeBooking(id) {
+        let req = bookings.find(b => b.id === id);
+        if(req) req.status = 'Selesai';
+        renderHistory();
+        showToast("Barang berhasil dikembalikan!");
+    }
+    
+    // Lender Functions
+    function switchLenderTab(tab) { 
+        document.getElementById('lender-items').classList.add('hidden'); 
+        document.getElementById('lender-requests').classList.add('hidden'); 
+        document.getElementById('lender-profile').classList.add('hidden'); 
+        document.getElementById(`lender-${tab}`).classList.remove('hidden'); 
+        
+        ['items','requests','profile'].forEach(t => { 
+            let btn = document.getElementById(`l-nav-${t}`);
+            if(t === tab) {
+                btn.className = "flex flex-col items-center justify-center bg-primary/10 text-primary-container rounded-full px-5 py-1.5 transition-transform duration-200 active:scale-90";
+                btn.firstElementChild.style.fontVariationSettings = "'FILL' 1";
+            } else {
+                btn.className = "flex flex-col items-center justify-center text-slate-400 hover:text-primary-container transition-colors px-5 py-1.5 active:scale-90";
+                btn.firstElementChild.style.fontVariationSettings = "'FILL' 0";
+            }
+        }); 
+        
+        if(tab === 'requests') renderRequests(); 
+    }
+    
+    function renderLenderItems() { 
+        let container = document.getElementById('lender-items-list'); 
+        container.innerHTML = lenderItems.map(item=>`
+        <div class="glass-card organic-shadow rounded-lg p-4 border border-slate-100 flex gap-4 group bg-white/80">
+            <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${item.image || 'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400'}"/>
+            </div>
+            <div class="flex flex-col justify-between py-1 w-full">
+                <div>
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-['Bricolage_Grotesque'] font-bold text-[16px] text-gray-800 line-clamp-1">${item.name}</h4>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">${item.status || 'Tersedia'}</span>
+                    <p class="text-gray-500 text-[11px] mt-2">Rp ${item.price.toLocaleString('id-ID')} / hari</p>
+                </div>
+                <div class="flex gap-3 mt-2">
+                    <button onclick="editItem(${item.id})" class="text-primary-container font-bold text-[10px] flex items-center gap-1 hover:underline">
+                        <span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                    </button>
+                    <button class="text-gray-400 font-bold text-[10px] flex items-center gap-1 hover:text-red-500">
+                        <span class="material-symbols-outlined text-[14px]">visibility_off</span> Arsipkan
+                    </button>
+                </div>
+            </div>
+        </div>`).join(''); 
+    }
+    
+    function openAddItemModal() { 
+        document.getElementById('modal-add-item').classList.remove('hidden'); 
+        renderCalendarAdd(); 
+    }
+    
+    function closeAddItemModal() { 
+        document.getElementById('modal-add-item').classList.add('hidden'); 
+    }
+    
+    function renderCalendarAdd() { 
+        let container = document.getElementById('calendar-add'); 
+        container.innerHTML = ''; 
+        for(let i=1;i<=30;i++){ 
+            let btn = document.createElement('div'); 
+            btn.innerText = i; 
+            btn.className = 'calendar-day p-2 border border-gray-200 rounded-lg text-center text-xs font-medium text-gray-600'; 
+            btn.dataset.date = i; 
+            btn.onclick = () => btn.classList.toggle('selected'); 
+            container.appendChild(btn); 
+        } 
+    }
+    
+    function addNewItem() { 
+        let name = document.getElementById('new-item-name').value; 
+        let price = parseInt(document.getElementById('new-item-price').value); 
+        let loc = "Kampus ITS"; 
+        if(!name || !price){showToast("Nama barang dan harga harus diisi");return;} 
+        let selectedDates = []; 
+        document.querySelectorAll('#calendar-add .selected').forEach(el=>selectedDates.push(parseInt(el.dataset.date))); 
+        lenderItems.push({ id: Date.now(), name, price, location: loc, availableDates: selectedDates, status: "Tersedia", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400" }); 
+        renderLenderItems(); 
+        closeAddItemModal(); 
+        showToast("Barang berhasil ditambahkan ke pasar!"); 
+    }
+    
+    function renderRequests() { 
+        let container = document.getElementById('requests-list'); 
+        
+        let activeRequests = bookings.filter(b => b.status === 'Menunggu Persetujuan' || b.status === 'Sedang Dipinjam');
+
+        if(activeRequests.length === 0) {
+            container.innerHTML='<div class="text-center py-10"><span class="material-symbols-outlined text-[48px] text-gray-300 mx-auto mb-2">inbox</span><p class="text-gray-400 text-sm font-medium">Tidak ada pesanan aktif</p></div>';
+            return;
+        }
+
+        container.innerHTML = activeRequests.map(req => `
+        <div class="glass-card organic-shadow p-4 rounded-lg flex flex-col border border-slate-100 bg-white/80 mb-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary-container shrink-0">
+                        <span class="material-symbols-outlined">shopping_bag</span>
+                    </div>
+                    <div>
+                        <p class="font-bold text-sm text-gray-800">${req.user}</p>
+                        <p class="text-[10px] text-gray-500">${req.item.name} • ${req.days} Hari</p>
+                    </div>
+                </div>
+                <div class="text-right shrink-0">
+                    <p class="text-primary-container font-black text-sm">${req.total}</p>
+                    <p class="text-[9px] text-gray-400 mt-1">${req.time}</p>
+                </div>
+            </div>
+            
+            ${req.status === 'Menunggu Persetujuan' ? `
+            <div class="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                <button onclick="approveRequest(${req.id})" class="flex-1 bg-primary-container text-white py-2 rounded-lg text-xs font-bold shadow-md active:scale-95 transition-transform">Setujui</button>
+                <button onclick="rejectRequest(${req.id})" class="flex-1 bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform">Tolak</button>
+            </div>
+            ` : `
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-100">
+                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Sedang Dipinjam</span>
+                <span class="text-xs text-gray-400">Menunggu pengembalian</span>
+            </div>
+            `}
+        </div>`).join(''); 
+    }
+
+    function approveRequest(id) {
+        let req = bookings.find(b => b.id === id);
+        if(req) req.status = 'Sedang Dipinjam';
+        renderRequests();
+        showToast("Pesanan Disetujui!");
+    }
+
+    function rejectRequest(id) {
+        let req = bookings.find(b => b.id === id);
+        if(req) req.status = 'Ditolak';
+        renderRequests();
+        showToast("Pesanan Ditolak.");
+    }
+    
+    function editItem(id) { showToast("Membuka pengaturan barang..."); }
+    
+    // Initialize Start
+    setStatusBarDark(false);
+</script>
+</body>
+</html>
